@@ -7,6 +7,7 @@ const campaignCanvas = document.querySelector(".campaign-3d");
 const counters = document.querySelectorAll("[data-counter]");
 const revealItems = document.querySelectorAll(".section, .service-card");
 const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const compactViewport = window.matchMedia("(max-width: 620px)");
 
 let pointerX = window.innerWidth / 2;
 let pointerY = window.innerHeight / 2;
@@ -283,6 +284,11 @@ if (campaignCanvas) {
     const rect = campaignCanvas.getBoundingClientRect();
     renderer.setSize(Math.max(rect.width, 1), Math.max(rect.height, 1), false);
     camera.aspect = Math.max(rect.width, 1) / Math.max(rect.height, 1);
+    camera.fov = compactViewport.matches ? 46 : 42;
+    camera.position.set(0, compactViewport.matches ? 0.28 : 0.4, compactViewport.matches ? 10.4 : 8);
+    campaignGroup.scale.setScalar(compactViewport.matches ? 0.58 : 1);
+    campaignGroup.position.y = compactViewport.matches ? 0.28 : 0;
+    campaignGroup.position.z = compactViewport.matches ? -0.18 : 0;
     camera.updateProjectionMatrix();
   };
 
@@ -315,5 +321,6 @@ if (campaignCanvas) {
 
   resizeThree();
   window.addEventListener("resize", resizeThree);
+  compactViewport.addEventListener("change", resizeThree);
   requestAnimationFrame(animateThree);
 }

@@ -228,6 +228,10 @@ a {
   animation: ticker 28s linear infinite;
 }
 
+.mobile-marquee {
+  display: none;
+}
+
 .hero-content {
   align-self: center;
   width: min(850px, 100%);
@@ -568,9 +572,15 @@ h2 {
   filter: drop-shadow(0 12px 22px rgba(0, 0, 0, 0.32));
 }
 
+.orbit-controls {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+}
+
 .orbit-node {
   position: absolute;
-  z-index: 3;
   min-width: 92px;
   min-height: 44px;
   border: 1px solid rgba(248, 251, 255, 0.26);
@@ -580,6 +590,7 @@ h2 {
   font: 800 0.9rem "Inter", sans-serif;
   cursor: pointer;
   backdrop-filter: blur(12px);
+  pointer-events: auto;
 }
 
 .node-one { top: 54px; }
@@ -637,6 +648,12 @@ h2 {
 }
 
 @keyframes ticker {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes mobileMarquee {
   to {
     transform: translateX(-50%);
   }
@@ -706,9 +723,50 @@ h2 {
 }
 
 @media (max-width: 620px) {
-  .cursor-glow,
+  .cursor-glow {
+    display: none;
+  }
+
   .ticker {
     display: none;
+  }
+
+  .mobile-marquee {
+    display: block;
+    width: 100%;
+    max-width: calc(100vw - 48px);
+    margin-top: 22px;
+    overflow: hidden;
+    border: 1px solid rgba(246, 180, 0, 0.26);
+    border-radius: 8px;
+    background: rgba(248, 251, 255, 0.06);
+  }
+
+  .mobile-marquee-track {
+    display: flex;
+    gap: 20px;
+    width: max-content;
+    padding: 11px 0;
+    color: var(--gold-hot);
+    font-size: 0.78rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    white-space: nowrap;
+    animation: mobileMarquee 16s linear infinite;
+  }
+
+  .mobile-marquee-track span {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .mobile-marquee-track span::after {
+    width: 5px;
+    height: 5px;
+    margin-left: 20px;
+    border-radius: 50%;
+    background: var(--gold);
+    content: "";
   }
 
   .site-header {
@@ -758,13 +816,53 @@ h2 {
   }
 
   .orbit-stage {
-    min-height: 460px;
+    min-height: 440px;
+    padding: 20px 16px 102px;
+    align-items: center;
   }
 
-  .node-one { top: 20px; }
-  .node-two { right: 0; }
-  .node-three { bottom: 20px; }
-  .node-four { left: 0; }
+  .orbit-stage::before {
+    width: min(250px, 62vw);
+    opacity: 0.72;
+  }
+
+  .campaign-3d {
+    top: 8px;
+    bottom: auto;
+    height: 292px;
+    opacity: 0.95;
+  }
+
+  .orbit-core {
+    width: min(160px, 46vw);
+    transform: translateY(-36px);
+  }
+
+  .mini-brand-logo {
+    width: min(132px, 38vw);
+  }
+
+  .orbit-controls {
+    top: auto;
+    right: 16px;
+    bottom: 16px;
+    left: 16px;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .orbit-node,
+  .node-one,
+  .node-two,
+  .node-three,
+  .node-four {
+    position: static;
+    width: 100%;
+    min-width: 0;
+    min-height: 40px;
+    font-size: 0.78rem;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

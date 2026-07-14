@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles.css?v=mobilemarquee2">
   </head>
   <body>
     <div class="cursor-glow" aria-hidden="true"></div>
@@ -44,6 +44,20 @@
           <div class="hero-actions">
             <a class="button primary magnetic" href="#contact">Grow my brand</a>
             <a class="button ghost magnetic" href="#work">See the 3D engine</a>
+          </div>
+          <div class="mobile-marquee" aria-hidden="true">
+            <div class="mobile-marquee-track">
+              <span>Google Ads</span>
+              <span>Meta Campaigns</span>
+              <span>Creator Marketing</span>
+              <span>Local SEO</span>
+              <span>WhatsApp Leads</span>
+              <span>Google Ads</span>
+              <span>Meta Campaigns</span>
+              <span>Creator Marketing</span>
+              <span>Local SEO</span>
+              <span>WhatsApp Leads</span>
+            </div>
           </div>
         </div>
         <aside class="hero-panel" aria-label="Campaign performance preview">
@@ -131,10 +145,12 @@
           <div class="orbit-core">
             <img class="mini-brand-logo" src="assets/adversado-logo-transparent.png" alt="ADVERSADO logo">
           </div>
-          <button class="orbit-node node-one magnetic" type="button">Reach</button>
-          <button class="orbit-node node-two magnetic" type="button">Clicks</button>
-          <button class="orbit-node node-three magnetic" type="button">Sales</button>
-          <button class="orbit-node node-four magnetic" type="button">Loyalty</button>
+          <div class="orbit-controls" aria-label="Campaign channels">
+            <button class="orbit-node node-one magnetic" type="button">Reach</button>
+            <button class="orbit-node node-two magnetic" type="button">Clicks</button>
+            <button class="orbit-node node-three magnetic" type="button">Sales</button>
+            <button class="orbit-node node-four magnetic" type="button">Loyalty</button>
+          </div>
         </div>
       </section>
 
@@ -162,6 +178,6 @@
       </section>
     </main>
 
-    <script type="module" src="script.js"></script>
+    <script type="module" src="script.js?v=mobilemarquee2"></script>
   </body>
 </html>
