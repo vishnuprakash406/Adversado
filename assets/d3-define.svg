@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400">
+  <rect width="600" height="400" fill="#0d1a2b"/>
+  <path d="M 120 200 L 240 120 L 360 200 L 480 120" stroke="#2f6fa8" stroke-width="2" fill="none" opacity="0.3"/>
+  <path d="M 120 200 L 240 280 L 360 200 L 480 280" stroke="#2f6fa8" stroke-width="2" fill="none" opacity="0.3"/>
+  <line x1="300" y1="80" x2="300" y2="340" stroke="#f6b400" stroke-width="1.5" opacity="0.4" stroke-dasharray="6,4"/>
+  <polygon points="300,160 340,200 300,240 260,200" fill="none" stroke="#f6b400" stroke-width="2" opacity="0.7"/>
+  <text x="300" y="370" fill="#f6b400" font-family="Montserrat, sans-serif" font-size="14" font-weight="800" text-anchor="middle" letter-spacing="2" opacity="0.6">ONE POSITION</text>
+</svg>

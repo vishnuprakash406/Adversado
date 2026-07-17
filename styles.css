@@ -1686,6 +1686,177 @@ h2 {
   color: var(--gold-hot);
 }
 
+/* ===== SIX Ds RICH INTERACTIVE ===== */
+.sixd-rich {
+  padding: 104px 0;
+  overflow: hidden;
+}
+
+.sixd-rich-header {
+  width: min(1160px, calc(100% - 40px));
+  margin: 0 auto 60px;
+}
+
+.sixd-rich-header h2 {
+  margin-bottom: 24px;
+}
+
+.sixd-rich-header .process-intro {
+  max-width: 820px;
+  color: var(--muted);
+  font-size: 1.05rem;
+  line-height: 1.8;
+  margin-bottom: 12px;
+}
+
+.sixd-rich-header .process-footnote {
+  color: var(--gold-hot);
+  font-weight: 700;
+  font-size: 0.92rem;
+  letter-spacing: 0.04em;
+}
+
+.sixd-scrollable {
+  display: flex;
+  gap: 24px;
+  padding: 20px max(24px, calc((100vw - 1160px) / 2));
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  cursor: grab;
+  user-select: none;
+}
+
+.sixd-scrollable::-webkit-scrollbar {
+  display: none;
+}
+
+.sixd-scrollable.dragging {
+  cursor: grabbing;
+  scroll-snap-type: none;
+}
+
+.sixd-card {
+  flex: 0 0 min(360px, 78vw);
+  scroll-snap-align: start;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 2px solid rgba(23, 57, 98, 0.6);
+  border-radius: 12px;
+  overflow: hidden;
+  background: rgba(10, 10, 10, 0.85);
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.4);
+  transition: transform 300ms ease, border-color 300ms ease, box-shadow 300ms ease;
+  transform: scale(0.92);
+  opacity: 0.6;
+  transition: transform 400ms cubic-bezier(0.2, 0.8, 0.2, 1), opacity 400ms ease, border-color 300ms ease, box-shadow 300ms ease;
+}
+
+.sixd-card.active {
+  transform: scale(1);
+  opacity: 1;
+  border-color: rgba(246, 180, 0, 0.35);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.5), 0 0 40px rgba(246, 180, 0, 0.06);
+}
+
+.sixd-card:hover {
+  border-color: rgba(246, 180, 0, 0.5);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.5), 0 0 60px rgba(246, 180, 0, 0.08);
+  transform: scale(1.02);
+}
+
+.sixd-card-visual {
+  position: relative;
+  width: 100%;
+  height: 220px;
+  overflow: hidden;
+  background: #0d1a2b;
+}
+
+.sixd-card-visual img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 500ms ease;
+}
+
+.sixd-card:hover .sixd-card-visual img {
+  transform: scale(1.08);
+}
+
+.sixd-card-num {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  font: 900 0.8rem "Montserrat", "Inter", sans-serif;
+  color: var(--gold-hot);
+  background: rgba(5, 5, 5, 0.7);
+  padding: 4px 10px;
+  border-radius: 4px;
+  letter-spacing: 0.06em;
+  backdrop-filter: blur(4px);
+}
+
+.sixd-card-deviz {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  padding: 20px;
+}
+
+.sixd-deviz-svg {
+  width: 120px;
+  height: 120px;
+  animation: sixdSpin 20s linear infinite;
+}
+
+@keyframes sixdSpin {
+  to { transform: rotate(360deg); }
+}
+
+.sixd-card-body {
+  padding: 24px 22px 28px;
+}
+
+.sixd-card-body .d-step-index {
+  margin-bottom: 12px;
+}
+
+.sixd-card-body h3 {
+  font-size: 1.35rem;
+  margin: 12px 0 14px;
+  color: var(--white);
+}
+
+.sixd-card-body p {
+  color: var(--muted);
+  font-size: 0.95rem;
+  line-height: 1.7;
+  margin: 0;
+}
+
+.sixd-progress {
+  width: min(360px, calc(100% - 80px));
+  height: 3px;
+  margin: 40px auto 0;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 99px;
+  position: relative;
+  overflow: hidden;
+}
+
+.sixd-progress-bar {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, var(--brand-blue), var(--gold));
+  border-radius: 99px;
+  transform-origin: left;
+  transform: scaleX(0);
+  transition: transform 200ms ease;
+}
+
 @media (max-width: 900px) {
   .site-header {
     grid-template-columns: 1fr auto;

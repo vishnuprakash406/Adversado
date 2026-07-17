@@ -641,6 +641,100 @@ if (campaignCanvas) {
   requestAnimationFrame(animateThree);
 }
 
+// ===== SIX Ds INTERACTIVE HORIZONTAL SCROLL =====
+(() => {
+  const scrollContainer = document.querySelector("[data-sixd-scroll]");
+  const progressBar = document.querySelector("[data-sixd-bar]");
+  if (!scrollContainer) return;
+
+  const cards = scrollContainer.querySelectorAll(".sixd-card");
+  let isDown = false;
+  let startX = 0;
+  let scrollLeft = 0;
+  let rafId = null;
+
+  const updateActive = () => {
+    const containerRect = scrollContainer.getBoundingClientRect();
+    const centerX = containerRect.left + containerRect.width / 2;
+
+    let activeCard = null;
+    let minDist = Infinity;
+
+    cards.forEach((card) => {
+      const rect = card.getBoundingClientRect();
+      const cardCenter = rect.left + rect.width / 2;
+      const dist = Math.abs(cardCenter - centerX);
+
+      if (dist < minDist) {
+        minDist = dist;
+        activeCard = card;
+      }
+
+      card.classList.toggle("active", dist < rect.width * 0.6);
+    });
+
+    // Update progress bar
+    if (progressBar) {
+      const maxScroll = scrollContainer.scrollWidth - scrollContainer.clientWidth;
+      const progress = maxScroll > 0 ? scrollContainer.scrollLeft / maxScroll : 0;
+      progressBar.style.transform = `scaleX(${progress})`;
+    }
+  };
+
+  const onScroll = () => {
+    if (rafId) cancelAnimationFrame(rafId);
+    rafId = requestAnimationFrame(updateActive);
+  };
+
+  scrollContainer.addEventListener("scroll", onScroll, { passive: true });
+
+  // Drag-to-scroll
+  scrollContainer.addEventListener("pointerdown", (e) => {
+    isDown = true;
+    startX = e.pageX - scrollContainer.offsetLeft;
+    scrollLeft = scrollContainer.scrollLeft;
+    scrollContainer.classList.add("dragging");
+    scrollContainer.setPointerCapture(e.pointerId);
+  });
+
+  scrollContainer.addEventListener("pointermove", (e) => {
+    if (!isDown) return;
+    e.preventDefault();
+    const x = e.pageX - scrollContainer.offsetLeft;
+    const walk = (x - startX) * 1.2;
+    scrollContainer.scrollLeft = scrollLeft - walk;
+  });
+
+  scrollContainer.addEventListener("pointerup", () => {
+    isDown = false;
+    scrollContainer.classList.remove("dragging");
+  });
+
+  scrollContainer.addEventListener("pointerleave", () => {
+    isDown = false;
+    scrollContainer.classList.remove("dragging");
+  });
+
+  // Keyboard navigation
+  scrollContainer.addEventListener("keydown", (e) => {
+    if (e.key === "ArrowRight") {
+      scrollContainer.scrollBy({ left: 380, behavior: "smooth" });
+    } else if (e.key === "ArrowLeft") {
+      scrollContainer.scrollBy({ left: -380, behavior: "smooth" });
+    }
+  });
+
+  scrollContainer.setAttribute("tabindex", "0");
+  scrollContainer.setAttribute("role", "region");
+  scrollContainer.setAttribute("aria-label", "Six Ds process — scroll horizontally to explore each step");
+
+  // Initial update
+  onScroll();
+
+  // Re-check on resize
+  window.addEventListener("resize", onScroll);
+})();
+
 // CAT SYSTEM: Curiosity Hunt Mechanics
 (() => {
   const STORAGE_KEY = "adversado_found_cats";
