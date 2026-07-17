@@ -194,13 +194,33 @@ if (logoEyeShells.length) {
 }
 
 if (motionCanvas) {
-  const protocolRenderer = new THREE.WebGLRenderer({
-    canvas: motionCanvas,
-    alpha: true,
-    antialias: true,
-  });
-  protocolRenderer.setClearColor(0x000000, 0);
-  protocolRenderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  // Check if it's a video element or canvas
+  if (motionCanvas.tagName === 'VIDEO') {
+    // Ensure autoplay-safe video settings and a valid source.
+    motionCanvas.muted = true;
+    motionCanvas.defaultMuted = true;
+    motionCanvas.playsInline = true;
+
+    if (!motionCanvas.currentSrc && !motionCanvas.querySelector("source")) {
+      motionCanvas.src = "assets/whatsapp-chat-preview.mp4";
+    }
+
+    motionCanvas.load();
+    const tryPlay = motionCanvas.play();
+    if (tryPlay && typeof tryPlay.catch === "function") {
+      tryPlay.catch(() => {
+        // Keep gradient fallback if browser blocks autoplay.
+      });
+    }
+  } else {
+    // Original Three.js canvas rendering code
+    const protocolRenderer = new THREE.WebGLRenderer({
+      canvas: motionCanvas,
+      alpha: true,
+      antialias: true,
+    });
+    protocolRenderer.setClearColor(0x000000, 0);
+    protocolRenderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
 
   const protocolScene = new THREE.Scene();
   const protocolCamera = new THREE.PerspectiveCamera(42, 1, 0.1, 120);
@@ -490,6 +510,7 @@ if (motionCanvas) {
   resizeProtocol();
   window.addEventListener("resize", resizeProtocol);
   requestAnimationFrame(animateProtocol);
+  }
 }
 
 if (campaignCanvas) {
