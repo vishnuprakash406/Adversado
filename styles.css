@@ -253,6 +253,7 @@ a {
 }
 
 .hero-video,
+.hero-background-video,
 .video-fallback,
 .hero-shade {
   position: absolute;
@@ -265,6 +266,13 @@ a {
   z-index: -4;
   opacity: 0.94;
   filter: saturate(1.18) contrast(1.08);
+}
+
+.hero-background-video {
+  z-index: -4;
+  object-fit: cover;
+  opacity: 0.78;
+  filter: saturate(1.1) contrast(1.04) brightness(0.72);
 }
 
 .video-fallback {
