@@ -8,9 +8,17 @@ const counters = document.querySelectorAll("[data-counter]");
 const revealItems = document.querySelectorAll(".section, .service-card");
 const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const compactViewport = window.matchMedia("(max-width: 620px)");
+const vanishCopy = document.querySelector("[data-vanish-copy]");
+const contactForm = document.querySelector("[data-contact-form]");
+const formNote = document.querySelector("[data-form-note]");
+const logoEyeShells = document.querySelectorAll("[data-logo-eyes]");
+const whatsAppNumber = "918921558984";
 
 let pointerX = window.innerWidth / 2;
 let pointerY = window.innerHeight / 2;
+let actionX = pointerX;
+let actionY = pointerY;
+let actionAt = 0;
 
 window.addEventListener("pointermove", (event) => {
   pointerX = event.clientX;
@@ -40,6 +48,19 @@ document.querySelectorAll(".magnetic").forEach((item) => {
   item.addEventListener("pointerleave", () => {
     item.style.transform = "";
   });
+});
+
+const registerActionPoint = (element) => {
+  const rect = element.getBoundingClientRect();
+  actionX = rect.left + rect.width / 2;
+  actionY = rect.top + rect.height / 2;
+  actionAt = performance.now();
+};
+
+document.querySelectorAll("a, button, .magnetic, .service-card, [type='submit']").forEach((item) => {
+  item.addEventListener("pointerenter", () => registerActionPoint(item));
+  item.addEventListener("pointerdown", () => registerActionPoint(item));
+  item.addEventListener("focus", () => registerActionPoint(item));
 });
 
 const animateCounter = (element) => {
@@ -98,6 +119,71 @@ document.querySelectorAll(".service-card").forEach((card) => {
   });
 });
 
+if (vanishCopy && !reduceMotion) {
+  window.setTimeout(() => {
+    vanishCopy.classList.add("has-vanished");
+  }, 3000);
+}
+
+if (contactForm && formNote) {
+  contactForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const formData = new FormData(contactForm);
+    const message = [
+      "Hi Adversado, I want a digital marketing audit.",
+      `Name: ${formData.get("name") || "-"}`,
+      `Company: ${formData.get("company") || "-"}`,
+      `Contact: ${formData.get("contact") || "-"}`,
+      `Need: ${formData.get("turning-point") || "-"}`,
+      `Message: ${formData.get("message") || "-"}`,
+    ].join("\n");
+    const url = `https://wa.me/${whatsAppNumber}?text=${encodeURIComponent(message)}`;
+    formNote.innerHTML = `Opening WhatsApp. If it does not open, <a href="${url}" target="_blank" rel="noopener">tap here</a>.`;
+    window.open(url, "_blank", "noopener");
+  });
+}
+
+if (logoEyeShells.length) {
+  const eyeStates = Array.from(logoEyeShells, (shell) => ({
+    shell,
+    x: 0,
+    y: 0,
+    targetX: 0,
+    targetY: 0,
+  }));
+
+  const updateEyeTargets = () => {
+    const now = performance.now();
+    const actionAge = Math.min((now - actionAt) / 1100, 1);
+    const actionWeight = 1 - actionAge;
+    const targetScreenX = pointerX * (1 - actionWeight) + actionX * actionWeight;
+    const targetScreenY = pointerY * (1 - actionWeight) + actionY * actionWeight;
+
+    eyeStates.forEach((state) => {
+      const rect = state.shell.getBoundingClientRect();
+      const eyeLayer = state.shell.querySelector(".logo-eye-layer");
+      const eyeRect = eyeLayer ? eyeLayer.getBoundingClientRect() : rect;
+      const centerX = eyeRect.left + eyeRect.width * 0.4227;
+      const centerY = eyeRect.top + eyeRect.height * 0.445;
+      state.targetX = Math.max(-0.16, Math.min(0.16, ((targetScreenX - centerX) / rect.width) * 0.55));
+      state.targetY = Math.max(-0.16, Math.min(0.16, ((targetScreenY - centerY) / rect.height) * 0.55));
+    });
+  };
+
+  const animateLogoEyes = () => {
+    updateEyeTargets();
+    eyeStates.forEach((state) => {
+      state.x += (state.targetX - state.x) * 0.08;
+      state.y += (state.targetY - state.y) * 0.08;
+      state.shell.style.setProperty("--eye-x", `${state.x.toFixed(2)}px`);
+      state.shell.style.setProperty("--eye-y", `${state.y.toFixed(2)}px`);
+    });
+    requestAnimationFrame(animateLogoEyes);
+  };
+
+  requestAnimationFrame(animateLogoEyes);
+}
+
 if (motionCanvas) {
   const context = motionCanvas.getContext("2d");
   const particles = Array.from({ length: 74 }, (_, index) => ({
@@ -125,9 +211,9 @@ if (motionCanvas) {
     context.clearRect(0, 0, width, height);
 
     const gradient = context.createLinearGradient(0, 0, width, height);
-    gradient.addColorStop(0, "#173962");
-    gradient.addColorStop(0.48, "#071729");
-    gradient.addColorStop(1, "#1e4a78");
+    gradient.addColorStop(0, "#181818");
+    gradient.addColorStop(0.48, "#050505");
+    gradient.addColorStop(1, "#2a1115");
     context.fillStyle = gradient;
     context.fillRect(0, 0, width, height);
 
@@ -139,14 +225,14 @@ if (motionCanvas) {
       const radius = particle.radius * density;
 
       context.beginPath();
-      context.fillStyle = index % 4 === 0 ? "rgba(255, 210, 90, 0.55)" : "rgba(248, 251, 255, 0.18)";
+      context.fillStyle = index % 4 === 0 ? "rgba(255, 210, 90, 0.55)" : "rgba(200, 16, 46, 0.2)";
       context.arc(x, y, radius, 0, Math.PI * 2);
       context.fill();
     });
 
     for (let line = 0; line < 11; line += 1) {
       const y = ((line / 10) * height + Math.sin(time * 0.0004 + line) * 52 * density) % height;
-      context.strokeStyle = line % 2 ? "rgba(246, 180, 0, 0.18)" : "rgba(248, 251, 255, 0.1)";
+      context.strokeStyle = line % 2 ? "rgba(246, 180, 0, 0.16)" : "rgba(200, 16, 46, 0.14)";
       context.lineWidth = 1.5 * density;
       context.beginPath();
       context.moveTo(-80 * density, y);
@@ -324,3 +410,117 @@ if (campaignCanvas) {
   compactViewport.addEventListener("change", resizeThree);
   requestAnimationFrame(animateThree);
 }
+
+// CAT SYSTEM: Curiosity Hunt Mechanics
+(() => {
+  const STORAGE_KEY = "adversado_found_cats";
+  const CAT_PAGES = ["home", "about", "services", "contact"];
+  
+  // Initialize or get found cats from localStorage
+  const getFoundCats = () => {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      return stored ? JSON.parse(stored) : {};
+    } catch (e) {
+      return {};
+    }
+  };
+
+  const saveCat = (pageName) => {
+    const found = getFoundCats();
+    found[pageName] = true;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(found));
+    return found;
+  };
+
+  const showCatNotification = (count) => {
+    const notification = document.createElement("div");
+    notification.className = "cat-notification";
+    notification.innerHTML = `<p>${count} of 5. It gets harder. 🐱</p>`;
+    document.body.appendChild(notification);
+
+    // Trigger animation
+    setTimeout(() => notification.classList.add("show"), 10);
+
+    // Remove after 3 seconds
+    setTimeout(() => {
+      notification.classList.remove("show");
+      setTimeout(() => notification.remove(), 300);
+    }, 3000);
+  };
+
+  const checkAllCatsFound = () => {
+    const found = getFoundCats();
+    const foundCount = CAT_PAGES.filter((page) => found[page]).length;
+    return foundCount === CAT_PAGES.length;
+  };
+
+  // Set up click handlers for hidden cats
+  const hiddenCats = document.querySelectorAll(".hidden-cat");
+  hiddenCats.forEach((catElement) => {
+    const pageName = catElement.getAttribute("data-cat-page");
+    
+    catElement.style.cursor = "pointer";
+    catElement.style.opacity = "0";
+    catElement.style.position = "fixed";
+    catElement.style.pointerEvents = "auto";
+    catElement.style.fontSize = "32px";
+    catElement.style.width = "40px";
+    catElement.style.height = "40px";
+    catElement.style.display = "flex";
+    catElement.style.alignItems = "center";
+    catElement.style.justifyContent = "center";
+    
+    // Randomize position on each page
+    const randomX = Math.random() * (window.innerWidth - 40);
+    const randomY = Math.random() * (window.innerHeight - 40);
+    catElement.style.left = randomX + "px";
+    catElement.style.top = randomY + "px";
+
+    // Handle click
+    catElement.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      
+      const found = getFoundCats();
+      
+      // Only process if not already found
+      if (!found[pageName]) {
+        saveCat(pageName);
+        const foundCats = getFoundCats();
+        const foundCount = CAT_PAGES.filter((page) => foundCats[page]).length;
+        
+        showCatNotification(foundCount);
+
+        // Hide this cat after found
+        catElement.style.display = "none";
+
+        // Check if all found
+        if (checkAllCatsFound()) {
+          setTimeout(() => {
+            window.location.href = "/curiosity-pays.html";
+          }, 500);
+        }
+      }
+    });
+
+    // Hide if already found
+    const found = getFoundCats();
+    if (found[pageName]) {
+      catElement.style.display = "none";
+    }
+  });
+
+  // Bonus: Randomize cat positions every few seconds for harder hunt
+  setInterval(() => {
+    const hiddenCats = document.querySelectorAll(".hidden-cat");
+    hiddenCats.forEach((catElement) => {
+      if (catElement.style.display !== "none") {
+        const randomX = Math.random() * (window.innerWidth - 40);
+        const randomY = Math.random() * (window.innerHeight - 40);
+        catElement.style.left = randomX + "px";
+        catElement.style.top = randomY + "px";
+      }
+    });
+  }, 5000);
+})();
