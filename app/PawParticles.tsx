@@ -19,7 +19,7 @@ export default function PawParticles() {
       window.setTimeout(() => paw.remove(), 3600);
     };
 
-    const interval = window.setInterval(createPaw, 4200);
+    const interval = window.setInterval(createPaw, 6200);
     return () => window.clearInterval(interval);
   }, []);
 
