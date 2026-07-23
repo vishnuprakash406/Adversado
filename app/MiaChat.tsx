@@ -30,6 +30,12 @@ export default function MiaChat() {
     if (open && !complete) window.setTimeout(() => inputRef.current?.focus(), 180);
   }, [open, step, complete]);
 
+  useEffect(() => {
+    const openMia = () => setOpen(true);
+    window.addEventListener("open-mia", openMia);
+    return () => window.removeEventListener("open-mia", openMia);
+  }, []);
+
   const saveAnswer = (answer: string) => {
     const clean = answer.trim();
     if (!clean || complete) return;

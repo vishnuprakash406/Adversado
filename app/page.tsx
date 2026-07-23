@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import MiaChat from "./MiaChat";
 
 const verticals = [
   ["01", "Brand Foundation", "Build what you stand on.", "Positioning · Identity · Naming"],
@@ -141,10 +140,10 @@ export default function Home() {
           </span>
         </a>
         <nav className={menuOpen ? "nav open" : "nav"} aria-label="Primary navigation">
-          <a href="#about" onClick={() => setMenuOpen(false)}>About</a>
-          <a href="#services" onClick={() => setMenuOpen(false)}>Services</a>
-          <a href="#process" onClick={() => setMenuOpen(false)}>Process</a>
-          <a href="#contact" onClick={() => setMenuOpen(false)}>Contact</a>
+          <a href="/about" onClick={() => setMenuOpen(false)}>About</a>
+          <a href="/services" onClick={() => setMenuOpen(false)}>Services</a>
+          <a href="/work" onClick={() => setMenuOpen(false)}>Work</a>
+          <a href="/contact" onClick={() => setMenuOpen(false)}>Contact</a>
         </nav>
         <button className="sound" onClick={() => setSoundOn(!soundOn)} aria-pressed={soundOn}>
           Sound {soundOn ? "on" : "off"}
@@ -243,7 +242,6 @@ export default function Home() {
         <p>The brand behind the brands.</p>
         <div><a href="mailto:test@adversado.com">Email</a><a href="https://wa.me/918921558984">WhatsApp</a><a href="#top">Back to top ↑</a></div>
       </footer>
-      <MiaChat />
     </main>
   );
 }
