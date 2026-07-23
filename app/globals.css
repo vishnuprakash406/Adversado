@@ -195,14 +195,18 @@ footer div { display:flex; justify-content:flex-end; gap:1.5rem; font-size:.72re
 .project-paper .project-visual { background:var(--paper); }
 .project-night .project-visual { color:var(--gold); background:radial-gradient(circle,#173962,#050505 65%); }
 .contact-page-hero { position:relative; display:grid; min-height:100svh; grid-template-columns:1.2fr .8fr; align-items:end; gap:8vw; padding:10rem 5vw 6rem; overflow:hidden; background:radial-gradient(circle at 75% 35%,rgba(23,57,98,.6),transparent 30%),#070707; }
-.contact-page-hero>div:first-child { position:relative; z-index:2; }
+.contact-page-hero>div:first-child { position:relative; z-index:2; animation:contact-copy-arrive .7s cubic-bezier(.2,.75,.2,1) both; }
 .contact-page-hero>div:first-child>p:last-child { max-width:600px; color:#aaa; font-size:1.1rem; line-height:1.6; }
-.contact-options { position:relative; z-index:2; display:grid; }
-.contact-options a,.contact-options button { position:relative; display:grid; grid-template-columns:1fr auto; gap:.6rem; padding:1.25rem 1rem; overflow:hidden; border:0; border-bottom:1px solid rgba(255,255,255,.25); color:#fff; background:rgba(255,255,255,0); text-align:left; cursor:pointer; isolation:isolate; transition:transform .22s ease,background .22s ease,box-shadow .22s ease,border-color .22s ease; }
+.contact-options { position:relative; z-index:2; display:grid; gap:.75rem; perspective:900px; }
+.contact-options a,.contact-options button { position:relative; display:grid; grid-template-columns:1fr auto; gap:.6rem; padding:1.2rem 1.25rem; overflow:hidden; border:1px solid rgba(255,255,255,.2); border-radius:9px; color:#fff; background:linear-gradient(120deg,rgba(23,57,98,.72),rgba(10,10,10,.72)); box-shadow:0 10px 28px rgba(0,0,0,.2); text-align:left; cursor:pointer; isolation:isolate; opacity:0; transform:translateY(20px); animation:contact-action-arrive .55s cubic-bezier(.2,.75,.2,1) forwards; transition:transform .22s ease,background .22s ease,box-shadow .22s ease,border-color .22s ease; }
+.contact-options a:nth-child(2) { animation-delay:.1s; }
+.contact-options button:nth-child(3) { animation-delay:.2s; }
+.contact-options a:before,.contact-options button:before { position:absolute; inset:0; z-index:0; background:linear-gradient(105deg,transparent 20%,rgba(255,255,255,.16) 48%,transparent 72%); content:""; transform:translateX(-120%); transition:transform .55s ease; }
 .contact-options span { grid-column:1/-1; color:var(--gold); font-size:.66rem; letter-spacing:.14em; text-transform:uppercase; }
 .contact-options strong { position:relative; z-index:2; overflow-wrap:anywhere; transition:transform .22s ease; }
 .contact-options i { position:relative; z-index:2; font-style:normal; transition:transform .22s ease; }
-.contact-micro-action:hover,.contact-micro-action:focus-visible { z-index:2; border-color:rgba(246,180,0,.7); background:rgba(255,255,255,.07); box-shadow:0 14px 32px rgba(0,0,0,.24); transform:translateY(-4px); }
+.contact-micro-action:hover,.contact-micro-action:focus-visible { z-index:2; border-color:rgba(246,180,0,.9); background:linear-gradient(120deg,rgba(23,57,98,.9),rgba(246,180,0,.18)); box-shadow:0 18px 38px rgba(0,0,0,.38),0 0 0 1px rgba(246,180,0,.18); transform:translateY(-7px) rotateX(2deg); }
+.contact-micro-action:hover:before,.contact-micro-action:focus-visible:before { transform:translateX(120%); }
 .contact-micro-action:hover strong,.contact-micro-action:focus-visible strong { transform:translateX(5px); }
 .contact-micro-action:hover i,.contact-micro-action:focus-visible i { color:var(--gold); transform:translate(3px,-3px) rotate(8deg); }
 .contact-micro-action:active { transform:translateY(-1px) scale(.99); }
@@ -241,6 +245,8 @@ footer div { display:flex; justify-content:flex-end; gap:1.5rem; font-size:.72re
 .audit-status a { font-weight:700; text-decoration:underline; }
 @keyframes mia-in { from { opacity:0; transform:translateY(8px); } }
 @keyframes contact-ripple { to { opacity:0; transform:scale(3.5); } }
+@keyframes contact-copy-arrive { from { opacity:0; transform:translateY(24px); } }
+@keyframes contact-action-arrive { to { opacity:1; transform:translateY(0); } }
 @keyframes float { 50% { transform:translateY(18px) rotate(5deg); } }
 @keyframes bob { 50% { transform:translateY(5px); } }
 @keyframes pulse { 50% { transform:scale(1.08); opacity:.42; } }
