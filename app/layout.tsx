@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import MiaChat from "./MiaChat";
+import PawParticles from "./PawParticles";
 
 export const metadata: Metadata = {
   title: "Adversado | The Brand Behind The Brands",
@@ -18,7 +19,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body>{children}<MiaChat /></body>
+      <body>{children}<MiaChat /><PawParticles /></body>
     </html>
   );
 }
