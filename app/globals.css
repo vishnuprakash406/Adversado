@@ -281,8 +281,8 @@ footer div { display:flex; justify-content:flex-end; gap:1.5rem; font-size:.72re
   .menu[aria-expanded="true"] span:nth-child(1) { transform:translateY(7px) rotate(45deg); }
   .menu[aria-expanded="true"] span:nth-child(2) { width:0; opacity:0; }
   .menu[aria-expanded="true"] span:nth-child(3) { transform:translateY(-7px) rotate(-45deg); }
-  .nav { position:fixed; inset:0; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:2rem; background:#090909; font-size:1.2rem; transform:translateY(-110%); transition:.35s; }
-  .nav.open { transform:translateY(0); }
+  .nav { position:fixed; inset:0; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:2rem; background:#090909; font-size:1.2rem; opacity:0; pointer-events:none; transform:translateY(-110%); visibility:hidden; transition:transform .35s ease,opacity .25s ease,visibility 0s linear .35s; }
+  .nav.open { opacity:1; pointer-events:auto; transform:translateY(0); visibility:visible; transition-delay:0s; }
   .hero { min-height:210svh; }
   .hero-stage { min-height:100svh; padding:7.25rem 18px max(2.25rem,env(safe-area-inset-bottom)); }
   .hero-kicker { top:5.25rem; left:18px; max-width:calc(100% - 86px); font-size:.61rem; line-height:1.35; letter-spacing:.13em; }

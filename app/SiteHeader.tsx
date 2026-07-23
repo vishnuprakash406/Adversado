@@ -13,10 +13,10 @@ export default function SiteHeader() {
         </span>
       </a>
       <nav className={open ? "nav open" : "nav"} aria-label="Primary navigation">
-        <a href="/about">About</a>
-        <a href="/services">Services</a>
-        <a href="/work">Work</a>
-        <a href="/contact">Contact</a>
+        <a href="/about" onClick={() => setOpen(false)}>About</a>
+        <a href="/services" onClick={() => setOpen(false)}>Services</a>
+        <a href="/work" onClick={() => setOpen(false)}>Work</a>
+        <a href="/contact" onClick={() => setOpen(false)}>Contact</a>
       </nav>
       <a className="subpage-cta" href="/contact">Start a project ↗</a>
       <button className="menu" onClick={() => setOpen(!open)} aria-expanded={open} aria-label="Toggle menu">
