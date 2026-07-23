@@ -22,7 +22,7 @@ export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [soundOn, setSoundOn] = useState(false);
   const heroRef = useRef<HTMLElement>(null);
-  const heroVideoRef = useRef<HTMLVideoElement>(null);
+  const heroCanvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
     const onMove = (event: PointerEvent) => {
@@ -45,46 +45,71 @@ export default function Home() {
 
   useEffect(() => {
     const hero = heroRef.current;
-    const video = heroVideoRef.current;
-    if (!hero || !video) return;
+    const canvas = heroCanvasRef.current;
+    if (!hero || !canvas) return;
 
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-    let targetTime = 0;
-    let currentTime = 0;
+    const context = canvas.getContext("2d");
+    const frameCount = 100;
+    const images: HTMLImageElement[] = [];
+    let targetFrame = 0;
+    let currentFrame = 0;
+    let lastDrawnFrame = -1;
     let frame = 0;
 
+    const resizeCanvas = () => {
+      const ratio = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = Math.round(canvas.clientWidth * ratio);
+      canvas.height = Math.round(canvas.clientHeight * ratio);
+      lastDrawnFrame = -1;
+    };
+
+    const drawFrame = (index: number) => {
+      const image = images[index];
+      if (!context || !image?.complete || !image.naturalWidth || index === lastDrawnFrame) return;
+      const scale = Math.max(canvas.width / image.naturalWidth, canvas.height / image.naturalHeight);
+      const width = image.naturalWidth * scale;
+      const height = image.naturalHeight * scale;
+      context.clearRect(0, 0, canvas.width, canvas.height);
+      context.drawImage(image, (canvas.width - width) / 2, (canvas.height - height) / 2, width, height);
+      lastDrawnFrame = index;
+    };
+
     const updateTarget = () => {
-      if (!Number.isFinite(video.duration) || reducedMotion.matches) return;
+      if (reducedMotion.matches) return;
       const travel = Math.max(hero.offsetHeight - window.innerHeight, 1);
       const progress = Math.min(Math.max(-hero.getBoundingClientRect().top / travel, 0), 1);
-      targetTime = progress * Math.max(video.duration - 0.05, 0);
+      targetFrame = progress * (frameCount - 1);
       hero.style.setProperty("--scroll-progress", progress.toFixed(4));
     };
 
     const render = () => {
-      currentTime += (targetTime - currentTime) * 0.12;
-      if (Math.abs(video.currentTime - currentTime) > 0.01) {
-        video.currentTime = currentTime;
-      }
+      currentFrame += (targetFrame - currentFrame) * 0.16;
+      drawFrame(Math.min(Math.round(currentFrame), frameCount - 1));
       frame = requestAnimationFrame(render);
     };
 
-    const prepareVideo = () => {
-      video.pause();
-      currentTime = video.currentTime;
-      updateTarget();
-    };
+    resizeCanvas();
+    for (let index = 0; index < frameCount; index += 1) {
+      const image = new Image();
+      image.decoding = "async";
+      image.src = `/hero-frames/frame-${String(index + 1).padStart(3, "0")}.webp`;
+      image.onload = () => {
+        if (index === 0 || Math.round(currentFrame) === index) drawFrame(index);
+      };
+      images.push(image);
+    }
 
-    video.addEventListener("loadedmetadata", prepareVideo);
     window.addEventListener("scroll", updateTarget, { passive: true });
+    window.addEventListener("resize", resizeCanvas);
     window.addEventListener("resize", updateTarget);
     updateTarget();
     frame = requestAnimationFrame(render);
 
     return () => {
       cancelAnimationFrame(frame);
-      video.removeEventListener("loadedmetadata", prepareVideo);
       window.removeEventListener("scroll", updateTarget);
+      window.removeEventListener("resize", resizeCanvas);
       window.removeEventListener("resize", updateTarget);
     };
   }, []);
@@ -130,9 +155,7 @@ export default function Home() {
 
       <section className="hero" id="top" ref={heroRef}>
         <div className="hero-stage">
-          <video ref={heroVideoRef} muted playsInline preload="auto" aria-hidden="true">
-            <source src="/home-hero-background.mp4" type="video/mp4" />
-          </video>
+          <canvas ref={heroCanvasRef} className="hero-sequence" aria-hidden="true" />
           <div className="hero-wash" />
           <p className="hero-kicker">Independent creative agency · India</p>
           <div className="hero-copy">

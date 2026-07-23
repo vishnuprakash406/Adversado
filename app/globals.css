@@ -26,8 +26,8 @@ button { font:inherit; }
 .menu { display:none; }
 .hero { --mx:0px; --my:0px; --scroll-progress:0; position:relative; min-height:260svh; background:#060606; }
 .hero-stage { position:sticky; top:0; display:flex; min-height:100svh; align-items:flex-end; padding:11rem 5vw 7vh; overflow:hidden; isolation:isolate; }
-.hero video,.hero-wash { position:absolute; inset:0; z-index:-3; width:100%; height:100%; object-fit:cover; }
-.hero video { filter:saturate(.8) contrast(1.08); transform:scale(1.04) translate(var(--mx),var(--my)); transition:transform .18s linear; }
+.hero-sequence,.hero-wash { position:absolute; inset:0; z-index:-3; width:100%; height:100%; }
+.hero-sequence { filter:saturate(.8) contrast(1.08); transform:scale(1.04) translate(var(--mx),var(--my)); transition:transform .18s linear; }
 .hero-wash { z-index:-2; background:linear-gradient(90deg,rgba(0,0,0,.9) 0%,rgba(0,0,0,.38) 62%,rgba(0,0,0,.66)),linear-gradient(0deg,#060606 0%,transparent 28%); }
 .hero-kicker { position:absolute; top:8rem; left:5vw; margin:0; color:var(--gold); font-size:.72rem; font-weight:700; letter-spacing:.18em; text-transform:uppercase; }
 .hero-copy { width:min(980px,86vw); }
