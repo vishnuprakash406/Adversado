@@ -22,6 +22,7 @@ export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [soundOn, setSoundOn] = useState(false);
   const heroRef = useRef<HTMLElement>(null);
+  const heroVideoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
     const onMove = (event: PointerEvent) => {
@@ -40,6 +41,52 @@ export default function Home() {
     };
     window.addEventListener("pointermove", onMove);
     return () => window.removeEventListener("pointermove", onMove);
+  }, []);
+
+  useEffect(() => {
+    const hero = heroRef.current;
+    const video = heroVideoRef.current;
+    if (!hero || !video) return;
+
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let targetTime = 0;
+    let currentTime = 0;
+    let frame = 0;
+
+    const updateTarget = () => {
+      if (!Number.isFinite(video.duration) || reducedMotion.matches) return;
+      const travel = Math.max(hero.offsetHeight - window.innerHeight, 1);
+      const progress = Math.min(Math.max(-hero.getBoundingClientRect().top / travel, 0), 1);
+      targetTime = progress * Math.max(video.duration - 0.05, 0);
+      hero.style.setProperty("--scroll-progress", progress.toFixed(4));
+    };
+
+    const render = () => {
+      currentTime += (targetTime - currentTime) * 0.12;
+      if (Math.abs(video.currentTime - currentTime) > 0.01) {
+        video.currentTime = currentTime;
+      }
+      frame = requestAnimationFrame(render);
+    };
+
+    const prepareVideo = () => {
+      video.pause();
+      currentTime = video.currentTime;
+      updateTarget();
+    };
+
+    video.addEventListener("loadedmetadata", prepareVideo);
+    window.addEventListener("scroll", updateTarget, { passive: true });
+    window.addEventListener("resize", updateTarget);
+    updateTarget();
+    frame = requestAnimationFrame(render);
+
+    return () => {
+      cancelAnimationFrame(frame);
+      video.removeEventListener("loadedmetadata", prepareVideo);
+      window.removeEventListener("scroll", updateTarget);
+      window.removeEventListener("resize", updateTarget);
+    };
   }, []);
 
   const playBell = () => {
@@ -82,21 +129,24 @@ export default function Home() {
       </header>
 
       <section className="hero" id="top" ref={heroRef}>
-        <video autoPlay muted loop playsInline preload="metadata" aria-hidden="true">
-          <source src="/home-hero-background.mp4" type="video/mp4" />
-        </video>
-        <div className="hero-wash" />
-        <p className="hero-kicker">Independent creative agency · India</p>
-        <div className="hero-copy">
-          <h1><span>Build a brand</span><span>people remember.</span></h1>
-          <p>Strategy to execution. One team, end to end. We transform brands through identity, ideas, digital, performance and experiences.</p>
-          <div className="hero-actions">
-            <a className="button gold" href="#contact" onClick={playBell}>Start a transformation <b>↗</b></a>
-            <a className="text-link" href="#services">See how we think <span>↓</span></a>
+        <div className="hero-stage">
+          <video ref={heroVideoRef} muted playsInline preload="auto" aria-hidden="true">
+            <source src="/home-hero-background.mp4" type="video/mp4" />
+          </video>
+          <div className="hero-wash" />
+          <p className="hero-kicker">Independent creative agency · India</p>
+          <div className="hero-copy">
+            <h1><span>Build a brand</span><span>people remember.</span></h1>
+            <p>Strategy to execution. One team, end to end. We transform brands through identity, ideas, digital, performance and experiences.</p>
+            <div className="hero-actions">
+              <a className="button gold" href="#contact" onClick={playBell}>Start a transformation <b>↗</b></a>
+              <a className="text-link" href="#services">See how we think <span>↓</span></a>
+            </div>
           </div>
+          <div className="orbit" aria-hidden="true"><span>STRATEGY · DESIGN · CULTURE · EXPERIENCE · </span></div>
+          <a className="paw-scroll" href="#about" aria-label="Scroll to discover"><span>●</span><i>⌄</i></a>
+          <div className="scroll-meter" aria-hidden="true"><span /></div>
         </div>
-        <div className="orbit" aria-hidden="true"><span>STRATEGY · DESIGN · CULTURE · EXPERIENCE · </span></div>
-        <a className="paw-scroll" href="#about" aria-label="Scroll to discover"><span>●</span><i>⌄</i></a>
       </section>
 
       <section className="manifesto" id="about">
