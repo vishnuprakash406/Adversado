@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import ContactForm from "../ContactForm";
 import OpenMiaButton from "../OpenMiaButton";
 import SiteFooter from "../SiteFooter";
 import SiteHeader from "../SiteHeader";
@@ -25,6 +26,8 @@ export default function ContactPage() {
         </div>
         <div className="contact-rings" aria-hidden="true"><i /><i /><i /></div>
       </section>
+
+      <ContactForm />
 
       <section className="contact-note">
         <p>Every engagement begins with an audit.</p>
