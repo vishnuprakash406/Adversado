@@ -16,6 +16,7 @@ type Answers = Record<(typeof questions)[number]["key"], string>;
 const emptyAnswers: Answers = { name: "", brand: "", email: "", need: "", message: "" };
 
 export default function MiaChat() {
+  const temporaryEmail = "vishnuprakash406@gmail.com";
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<Answers>(emptyAnswers);
@@ -64,6 +65,18 @@ export default function MiaChat() {
     setStatus("idle");
   };
 
+  const fallbackEmail = `mailto:${temporaryEmail}?subject=${encodeURIComponent(`New Mia enquiry: ${answers.brand}`)}&body=${encodeURIComponent([
+    "New website enquiry from Mia",
+    "",
+    `Name: ${answers.name}`,
+    `Brand: ${answers.brand}`,
+    `Contact: ${answers.email}`,
+    `Need: ${answers.need}`,
+    "",
+    "Message:",
+    answers.message
+  ].join("\n"))}`;
+
   return (
     <aside className={open ? "mia open" : "mia"} aria-label="Chat with Mia">
       <button className="mia-launcher" type="button" onClick={() => setOpen(!open)} aria-expanded={open} aria-controls="mia-panel" aria-label={open ? "Close Mia assistant" : "Open Mia assistant"}>
@@ -103,7 +116,12 @@ export default function MiaChat() {
               <button className="mia-send" type="button" onClick={sendEnquiry} disabled={status === "sending"}>
                 {status === "sending" ? "Sending..." : "Send to Adversado ↗"}
               </button>
-              {status === "error" && <p className="mia-error">Mia couldn&apos;t deliver that yet. Please try again or use WhatsApp.</p>}
+              {status === "error" && (
+                <p className="mia-error">
+                  Automatic delivery is not connected yet.{" "}
+                  <a href={fallbackEmail}>Email this enquiry directly</a>.
+                </p>
+              )}
             </div>
           )}
 

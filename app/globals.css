@@ -136,6 +136,7 @@ footer div { display:flex; justify-content:flex-end; gap:1.5rem; font-size:.72re
 .mia-send { width:100%; padding:.85rem 1rem; border:0; border-radius:9px; color:#111; background:var(--gold); font-weight:700; text-transform:uppercase; cursor:pointer; }
 .mia-send:disabled { opacity:.55; }
 .mia-error { color:#ff9d86!important; }
+.mia-error a { color:var(--gold); font-weight:700; text-decoration:underline; }
 .mia-success button { border:0; color:var(--gold); background:none; font-size:.72rem; text-decoration:underline; cursor:pointer; }
 @keyframes mia-in { from { opacity:0; transform:translateY(8px); } }
 @keyframes float { 50% { transform:translateY(18px) rotate(5deg); } }

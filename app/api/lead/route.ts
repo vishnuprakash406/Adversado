@@ -15,7 +15,7 @@ const clean = (value: unknown, limit: number) =>
 
 export async function POST(request: Request) {
   const apiKey = process.env.RESEND_API_KEY;
-  const recipient = process.env.LEAD_EMAIL;
+  const recipient = process.env.LEAD_EMAIL || "vishnuprakash406@gmail.com";
   const from = process.env.LEAD_FROM_EMAIL;
 
   if (!apiKey || !recipient || !from) {
