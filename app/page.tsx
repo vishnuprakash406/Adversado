@@ -31,6 +31,12 @@ export default function Home() {
       heroRef.current?.style.setProperty("--my", `${y * 18}px`);
       document.documentElement.style.setProperty("--cursor-x", `${event.clientX}px`);
       document.documentElement.style.setProperty("--cursor-y", `${event.clientY}px`);
+      const eyeX = (event.clientX / window.innerWidth - 0.5) * 4;
+      const eyeY = (event.clientY / window.innerHeight - 0.5) * 4;
+      document.querySelectorAll<HTMLElement>(".logo-eyes").forEach((logo) => {
+        logo.style.setProperty("--eye-x", `${eyeX}px`);
+        logo.style.setProperty("--eye-y", `${eyeY}px`);
+      });
     };
     window.addEventListener("pointermove", onMove);
     return () => window.removeEventListener("pointermove", onMove);
@@ -56,7 +62,10 @@ export default function Home() {
       <div className="cursor-glow" aria-hidden="true" />
       <header className="header">
         <a className="wordmark" href="#top" aria-label="Adversado home">
-          <img src="/adversado-logo-clean-3x.png" alt="Adversado" />
+          <span className="logo-eyes">
+            <img src="/adversado-logo-clean-3x.png" alt="Adversado" />
+            <span className="eye-layer" aria-hidden="true"><i /><i /></span>
+          </span>
         </a>
         <nav className={menuOpen ? "nav open" : "nav"} aria-label="Primary navigation">
           <a href="#about" onClick={() => setMenuOpen(false)}>About</a>
@@ -153,7 +162,10 @@ export default function Home() {
       </section>
 
       <footer>
-        <img src="/adversado-logo-clean-3x.png" alt="Adversado" />
+        <span className="logo-eyes footer-logo">
+          <img src="/adversado-logo-clean-3x.png" alt="Adversado" />
+          <span className="eye-layer" aria-hidden="true"><i /><i /></span>
+        </span>
         <p>The brand behind the brands.</p>
         <div><a href="mailto:test@adversado.com">Email</a><a href="https://wa.me/918921558984">WhatsApp</a><a href="#top">Back to top ↑</a></div>
       </footer>
