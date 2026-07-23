@@ -198,10 +198,15 @@ footer div { display:flex; justify-content:flex-end; gap:1.5rem; font-size:.72re
 .contact-page-hero>div:first-child { position:relative; z-index:2; }
 .contact-page-hero>div:first-child>p:last-child { max-width:600px; color:#aaa; font-size:1.1rem; line-height:1.6; }
 .contact-options { position:relative; z-index:2; display:grid; }
-.contact-options a,.contact-options button { display:grid; grid-template-columns:1fr auto; gap:.6rem; padding:1.25rem 0; border:0; border-bottom:1px solid rgba(255,255,255,.25); color:#fff; background:none; text-align:left; cursor:pointer; }
+.contact-options a,.contact-options button { position:relative; display:grid; grid-template-columns:1fr auto; gap:.6rem; padding:1.25rem 1rem; overflow:hidden; border:0; border-bottom:1px solid rgba(255,255,255,.25); color:#fff; background:rgba(255,255,255,0); text-align:left; cursor:pointer; isolation:isolate; transition:transform .22s ease,background .22s ease,box-shadow .22s ease,border-color .22s ease; }
 .contact-options span { grid-column:1/-1; color:var(--gold); font-size:.66rem; letter-spacing:.14em; text-transform:uppercase; }
-.contact-options strong { overflow-wrap:anywhere; }
-.contact-options i { font-style:normal; }
+.contact-options strong { position:relative; z-index:2; overflow-wrap:anywhere; transition:transform .22s ease; }
+.contact-options i { position:relative; z-index:2; font-style:normal; transition:transform .22s ease; }
+.contact-micro-action:hover,.contact-micro-action:focus-visible { z-index:2; border-color:rgba(246,180,0,.7); background:rgba(255,255,255,.07); box-shadow:0 14px 32px rgba(0,0,0,.24); transform:translateY(-4px); }
+.contact-micro-action:hover strong,.contact-micro-action:focus-visible strong { transform:translateX(5px); }
+.contact-micro-action:hover i,.contact-micro-action:focus-visible i { color:var(--gold); transform:translate(3px,-3px) rotate(8deg); }
+.contact-micro-action:active { transform:translateY(-1px) scale(.99); }
+.contact-ripple { position:absolute!important; z-index:1!important; border-radius:50%!important; background:rgba(246,180,0,.34)!important; pointer-events:none!important; transform:scale(0); animation:contact-ripple .65s ease-out forwards; }
 .contact-rings { position:absolute; top:8%; right:-8%; width:48vw; aspect-ratio:1; border:1px solid rgba(246,180,0,.18); border-radius:50%; }
 .contact-rings i { position:absolute; inset:18%; border:1px solid rgba(255,255,255,.12); border-radius:50%; }
 .contact-rings i:nth-child(2) { inset:34%; }
@@ -235,6 +240,7 @@ footer div { display:flex; justify-content:flex-end; gap:1.5rem; font-size:.72re
 .audit-status.error { color:#a52d23; }
 .audit-status a { font-weight:700; text-decoration:underline; }
 @keyframes mia-in { from { opacity:0; transform:translateY(8px); } }
+@keyframes contact-ripple { to { opacity:0; transform:scale(3.5); } }
 @keyframes float { 50% { transform:translateY(18px) rotate(5deg); } }
 @keyframes bob { 50% { transform:translateY(5px); } }
 @keyframes pulse { 50% { transform:scale(1.08); opacity:.42; } }
