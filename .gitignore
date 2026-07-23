@@ -1,2 +1,8 @@
 .DS_Store
 *.mp4
+.env
+.env.*
+!.env.example
+.wrangler/
+dist/
+node_modules/
