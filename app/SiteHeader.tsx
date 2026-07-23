@@ -20,7 +20,7 @@ export default function SiteHeader() {
       </nav>
       <a className="subpage-cta" href="/contact">Start a project ↗</a>
       <button className="menu" onClick={() => setOpen(!open)} aria-expanded={open} aria-label="Toggle menu">
-        <span /><span />
+        <span /><span /><span />
       </button>
     </header>
   );

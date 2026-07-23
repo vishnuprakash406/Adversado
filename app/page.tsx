@@ -149,7 +149,7 @@ export default function Home() {
           Sound {soundOn ? "on" : "off"}
         </button>
         <button className="menu" onClick={() => setMenuOpen(!menuOpen)} aria-expanded={menuOpen} aria-label="Toggle menu">
-          <span /><span />
+          <span /><span /><span />
         </button>
       </header>
 
