@@ -95,6 +95,49 @@ footer img { display:block; width:220px; }
 .footer-logo { width:220px; }
 footer p { color:#aaa; }
 footer div { display:flex; justify-content:flex-end; gap:1.5rem; font-size:.72rem; font-weight:700; text-transform:uppercase; }
+.mia { position:fixed; right:24px; bottom:24px; z-index:80; width:min(390px,calc(100vw - 32px)); font-family:"DM Sans",sans-serif; }
+.mia-launcher { display:flex; align-items:center; gap:.8rem; width:auto; min-width:220px; margin-left:auto; padding:.65rem .75rem; border:1px solid rgba(255,255,255,.2); border-radius:999px; color:#111; background:var(--gold); box-shadow:0 18px 55px rgba(0,0,0,.4); cursor:pointer; transition:transform .22s ease,border-radius .22s ease; }
+.mia-launcher:hover { transform:translateY(-3px); }
+.mia.open .mia-launcher { border-radius:16px 16px 0 0; }
+.mia-cat { display:grid; flex:0 0 42px; width:42px; height:42px; place-items:center; border-radius:50%; color:#fff; background:#111; font-size:1.35rem; }
+.mia-launcher>span:nth-child(2) { display:flex; flex:1; flex-direction:column; align-items:flex-start; line-height:1.2; }
+.mia-launcher b { font-size:.86rem; text-transform:uppercase; }
+.mia-launcher small { margin-top:.2rem; opacity:.68; font-size:.67rem; }
+.mia-launcher>i { font-style:normal; font-size:1.15rem; }
+.mia-panel { position:absolute; right:0; bottom:68px; display:flex; flex-direction:column; width:100%; max-height:min(670px,calc(100svh - 110px)); overflow:hidden; border:1px solid rgba(255,255,255,.16); border-radius:18px; background:#0d0d0d; box-shadow:0 28px 90px rgba(0,0,0,.62); opacity:0; pointer-events:none; transform:translateY(16px) scale(.97); transform-origin:bottom right; transition:opacity .24s ease,transform .24s ease; }
+.mia.open .mia-panel { opacity:1; pointer-events:auto; transform:translateY(0) scale(1); }
+.mia-panel>header { display:flex; align-items:center; gap:.75rem; padding:1rem; border-bottom:1px solid var(--line); background:linear-gradient(110deg,#132f50,#0b0b0b); }
+.mia-avatar { display:grid; width:42px; height:42px; place-items:center; border-radius:50%; background:var(--gold); font-size:1.35rem; }
+.mia-panel>header>div:nth-child(2) { display:flex; flex:1; flex-direction:column; }
+.mia-panel>header strong { font-size:.95rem; letter-spacing:.08em; text-transform:uppercase; }
+.mia-panel>header span { margin-top:.2rem; color:#b9c3cf; font-size:.68rem; }
+.mia-panel>header span i { display:inline-block; width:7px; height:7px; margin-right:.3rem; border-radius:50%; background:#62dd92; box-shadow:0 0 9px #62dd92; }
+.mia-panel>header button { border:0; color:#fff; background:none; font-size:1.5rem; cursor:pointer; }
+.mia-conversation { min-height:250px; padding:1rem; overflow-y:auto; overscroll-behavior:contain; scrollbar-color:rgba(246,180,0,.5) transparent; }
+.mia-exchange { display:contents; }
+.mia-bubble { width:fit-content; max-width:88%; margin-bottom:.75rem; padding:.75rem .9rem; border-radius:14px; font-size:.83rem; line-height:1.45; }
+.mia-bubble.bot { border:1px solid rgba(255,255,255,.1); border-bottom-left-radius:3px; color:#e9e6df; background:#181818; }
+.mia-bubble.user { margin-left:auto; border-bottom-right-radius:3px; color:#111; background:var(--gold); }
+.mia-bubble.current { animation:mia-in .28s ease both; }
+.mia-input { display:grid; grid-template-columns:1fr auto; gap:.65rem; align-items:end; padding:.85rem; border-top:1px solid var(--line); background:#111; }
+.mia-input input,.mia-input textarea { width:100%; min-width:0; padding:.8rem .9rem; border:1px solid rgba(255,255,255,.16); border-radius:10px; outline:none; color:#fff; background:#080808; font:inherit; font-size:.82rem; resize:none; }
+.mia-input input:focus,.mia-input textarea:focus { border-color:var(--gold); box-shadow:0 0 0 3px rgba(246,180,0,.12); }
+.mia-input button { display:grid; width:42px; height:42px; place-items:center; border:0; border-radius:10px; color:#111; background:var(--gold); font-size:1.2rem; cursor:pointer; }
+.mia-input button:disabled { opacity:.35; cursor:not-allowed; }
+.mia-choices { display:grid; gap:.45rem; padding:.8rem; border-top:1px solid var(--line); background:#111; }
+.mia-choices button { padding:.7rem .8rem; border:1px solid rgba(255,255,255,.15); border-radius:9px; color:#eee; background:#171717; font-size:.76rem; text-align:left; cursor:pointer; transition:.18s; }
+.mia-choices button:hover { border-color:var(--gold); color:#111; background:var(--gold); }
+.mia-summary dl { margin:.8rem 0; border:1px solid var(--line); border-radius:10px; overflow:hidden; }
+.mia-summary dl div { display:grid; grid-template-columns:72px 1fr; gap:.75rem; padding:.55rem .7rem; border-bottom:1px solid var(--line); font-size:.72rem; }
+.mia-summary dl div:last-child { border:0; }
+.mia-summary dt { color:#888; text-transform:uppercase; }
+.mia-summary dd { margin:0; color:#eee; overflow-wrap:anywhere; }
+.mia-summary>p { color:#858585; font-size:.64rem; line-height:1.4; }
+.mia-send { width:100%; padding:.85rem 1rem; border:0; border-radius:9px; color:#111; background:var(--gold); font-weight:700; text-transform:uppercase; cursor:pointer; }
+.mia-send:disabled { opacity:.55; }
+.mia-error { color:#ff9d86!important; }
+.mia-success button { border:0; color:var(--gold); background:none; font-size:.72rem; text-decoration:underline; cursor:pointer; }
+@keyframes mia-in { from { opacity:0; transform:translateY(8px); } }
 @keyframes float { 50% { transform:translateY(18px) rotate(5deg); } }
 @keyframes bob { 50% { transform:translateY(5px); } }
 @keyframes pulse { 50% { transform:scale(1.08); opacity:.42; } }
@@ -139,6 +182,13 @@ footer div { display:flex; justify-content:flex-end; gap:1.5rem; font-size:.72re
   .contact-button { min-height:200px; margin-top:3rem; }
   footer { grid-template-columns:1fr; }
   footer div { justify-content:flex-start; flex-wrap:wrap; }
+  .mia { right:12px; bottom:12px; width:calc(100vw - 24px); }
+  .mia-launcher { min-width:0; padding:.55rem; }
+  .mia:not(.open) .mia-launcher { width:58px; height:58px; padding:7px; }
+  .mia:not(.open) .mia-launcher>span:nth-child(2),.mia:not(.open) .mia-launcher>i { display:none; }
+  .mia-cat { flex-basis:42px; }
+  .mia-panel { bottom:0; max-height:calc(100svh - 24px); border-radius:16px; }
+  .mia.open .mia-launcher { visibility:hidden; }
 }
 @media (max-width:380px) {
   .hero-stage { padding-right:14px; padding-left:14px; }

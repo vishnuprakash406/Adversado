@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import MiaChat from "./MiaChat";
 
 const verticals = [
   ["01", "Brand Foundation", "Build what you stand on.", "Positioning · Identity · Naming"],
@@ -242,6 +243,7 @@ export default function Home() {
         <p>The brand behind the brands.</p>
         <div><a href="mailto:test@adversado.com">Email</a><a href="https://wa.me/918921558984">WhatsApp</a><a href="#top">Back to top ↑</a></div>
       </footer>
+      <MiaChat />
     </main>
   );
 }
