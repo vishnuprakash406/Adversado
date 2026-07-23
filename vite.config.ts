@@ -15,7 +15,7 @@ export default defineConfig(async ({ command }) => {
       })]
     : [];
   return {
-    publicDir: "assets",
+    publicDir: "public",
     plugins: [
       vinext(),
       sites(),
