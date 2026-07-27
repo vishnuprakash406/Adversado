@@ -72,9 +72,25 @@ export default function Home() {
 
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
     let targetTime = 0;
-    let currentTime = 0;
-    let animationFrame = 0;
+    let scheduledFrame = 0;
     let videoPrimed = false;
+    let seekPending = false;
+
+    const applyTarget = () => {
+      scheduledFrame = 0;
+      if (!videoPrimed || video.readyState < 2) return;
+      if (video.seeking) {
+        seekPending = true;
+        return;
+      }
+      seekPending = false;
+      const frameTime = Math.round(targetTime * 24) / 24;
+      if (Math.abs(video.currentTime - frameTime) >= 1 / 24) video.currentTime = frameTime;
+    };
+
+    const scheduleTarget = () => {
+      if (!scheduledFrame) scheduledFrame = requestAnimationFrame(applyTarget);
+    };
 
     const updateTarget = () => {
       if (reducedMotion.matches) return;
@@ -86,15 +102,7 @@ export default function Home() {
       const usableDuration = Math.min(5, Math.max((video.duration || 5) - 0.03, 0));
       targetTime = progress * usableDuration;
       hero.style.setProperty("--scroll-progress", progress.toFixed(4));
-    };
-
-    const render = () => {
-      currentTime += (targetTime - currentTime) * 0.14;
-      const frameTime = Math.round(currentTime * 24) / 24;
-      if (videoPrimed && video.readyState >= 1 && !video.seeking && Math.abs(video.currentTime - frameTime) >= 1 / 24) {
-        video.currentTime = frameTime;
-      }
-      animationFrame = requestAnimationFrame(render);
+      scheduleTarget();
     };
 
     const primeVideo = async () => {
@@ -110,6 +118,11 @@ export default function Home() {
       video.pause();
       videoPrimed = true;
       updateTarget();
+      scheduleTarget();
+    };
+
+    const onSeeked = () => {
+      if (seekPending || Math.abs(video.currentTime - targetTime) >= 1 / 24) scheduleTarget();
     };
 
     window.addEventListener("scroll", updateTarget, { passive: true });
@@ -118,18 +131,19 @@ export default function Home() {
     video.addEventListener("loadedmetadata", updateTarget);
     video.addEventListener("loadeddata", primeVideo, { once: true });
     video.addEventListener("canplay", primeVideo, { once: true });
+    video.addEventListener("seeked", onSeeked);
     updateTarget();
-    animationFrame = requestAnimationFrame(render);
     video.load();
 
     return () => {
-      cancelAnimationFrame(animationFrame);
+      cancelAnimationFrame(scheduledFrame);
       window.removeEventListener("scroll", updateTarget);
       window.removeEventListener("resize", updateTarget);
       window.removeEventListener("orientationchange", updateTarget);
       video.removeEventListener("loadedmetadata", updateTarget);
       video.removeEventListener("loadeddata", primeVideo);
       video.removeEventListener("canplay", primeVideo);
+      video.removeEventListener("seeked", onSeeked);
     };
   }, []);
 
