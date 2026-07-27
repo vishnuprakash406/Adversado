@@ -20,7 +20,7 @@ export default function ServicesPage() {
     <main className="subpage">
       <SiteHeader />
       <section className="page-hero services-page-hero" aria-label="From first truth to every touchpoint.">
-        <ParticleHeadline lines={["FROM FIRST TRUTH", "TO EVERY TOUCHPOINT."]} />
+        <ParticleHeadline lines={["FROM FIRST TRUTH", "TO EVERY TOUCHPOINT."]} mobileLines={["FROM FIRST", "TRUTH TO", "EVERY", "TOUCHPOINT."]} />
         <p className="label">Brand transformation</p>
         <p className="page-lede">Four verticals, connected by one strategy. Enter anywhere; leave with a brand that makes sense everywhere.</p>
         <div className="page-index">Services / 02</div>

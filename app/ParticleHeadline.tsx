@@ -3,7 +3,8 @@
 import { useEffect, useRef } from "react";
 
 type ParticleHeadlineProps = {
-  lines: [string, string];
+  lines: string[];
+  mobileLines: string[];
 };
 
 type Particle = {
@@ -17,7 +18,7 @@ type Particle = {
   alpha: number;
 };
 
-export default function ParticleHeadline({ lines }: ParticleHeadlineProps) {
+export default function ParticleHeadline({ lines, mobileLines }: ParticleHeadlineProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -43,21 +44,24 @@ export default function ParticleHeadline({ lines }: ParticleHeadlineProps) {
       const offscreenContext = offscreen.getContext("2d");
       if (!offscreenContext) return;
 
-      const maxTextWidth = width * 0.88;
-      let fontSize = Math.floor(Math.min(width / 5, height / 4.5));
-      offscreenContext.font = `800 ${fontSize}px "Syne", sans-serif`;
-      while (Math.max(...lines.map((line) => offscreenContext.measureText(line).width)) > maxTextWidth && fontSize > 16) {
+      const activeLines = width <= 760 ? mobileLines : lines;
+      const maxTextWidth = width * (width <= 760 ? 0.9 : 0.88);
+      let fontSize = Math.floor(width <= 760 ? Math.min(width / 2.7, height / 7) : Math.min(width / 5, height / 4.5));
+      offscreenContext.font = `800 ${fontSize}px "Baloo 2", "Arial Rounded MT Bold", sans-serif`;
+      while (Math.max(...activeLines.map((line) => offscreenContext.measureText(line).width)) > maxTextWidth && fontSize > 20) {
         fontSize -= 2;
-        offscreenContext.font = `800 ${fontSize}px "Syne", sans-serif`;
+        offscreenContext.font = `800 ${fontSize}px "Baloo 2", "Arial Rounded MT Bold", sans-serif`;
       }
 
       offscreenContext.fillStyle = "#fff";
       offscreenContext.textAlign = "center";
       offscreenContext.textBaseline = "middle";
-      const lineHeight = fontSize * 0.92;
+      const lineHeight = fontSize * 0.8;
       const centerY = height * 0.43;
-      offscreenContext.fillText(lines[0], width / 2, centerY - lineHeight / 2);
-      offscreenContext.fillText(lines[1], width / 2, centerY + lineHeight / 2);
+      const firstLineY = centerY - ((activeLines.length - 1) * lineHeight) / 2;
+      activeLines.forEach((line, index) => {
+        offscreenContext.fillText(line, width / 2, firstLineY + index * lineHeight);
+      });
 
       const pixels = offscreenContext.getImageData(0, 0, offscreen.width, offscreen.height).data;
       const area = width * height;

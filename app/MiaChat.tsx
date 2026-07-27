@@ -6,6 +6,7 @@ const questions = [
   { key: "name", prompt: "First, what should I call you?", placeholder: "Your name", type: "text" },
   { key: "brand", prompt: "Lovely. What brand or business are we talking about?", placeholder: "Brand or company", type: "text" },
   { key: "email", prompt: "Where can the Adversado team reach you?", placeholder: "you@company.com", type: "email" },
+  { key: "phone", prompt: "And what phone number should the team use?", placeholder: "+91 98765 43210", type: "tel" },
   { key: "need", prompt: "What kind of transformation do you need?", placeholder: "Choose one", type: "choice" },
   { key: "message", prompt: "Last one: what is changing, and what would a great outcome look like?", placeholder: "Tell Mia the useful part...", type: "textarea" }
 ] as const;
@@ -13,7 +14,7 @@ const questions = [
 const choices = ["Launch a new brand", "Reposition an existing brand", "Campaign or growth", "Website or digital experience", "Something else"];
 type Answers = Record<(typeof questions)[number]["key"], string>;
 
-const emptyAnswers: Answers = { name: "", brand: "", email: "", need: "", message: "" };
+const emptyAnswers: Answers = { name: "", brand: "", email: "", phone: "", need: "", message: "" };
 
 export default function MiaChat() {
   const temporaryEmail = "vishnuprakash406@gmail.com";
@@ -76,7 +77,8 @@ export default function MiaChat() {
     "",
     `Name: ${answers.name}`,
     `Brand: ${answers.brand}`,
-    `Contact: ${answers.email}`,
+    `Email: ${answers.email}`,
+    `Phone: ${answers.phone}`,
     `Need: ${answers.need}`,
     "",
     "Message:",
@@ -120,7 +122,8 @@ export default function MiaChat() {
                 <div><dt>Name</dt><dd>{answers.name}</dd></div>
                 <div><dt>Brand</dt><dd>{answers.brand}</dd></div>
                 <div><dt>Need</dt><dd>{answers.need}</dd></div>
-                <div><dt>Contact</dt><dd>{answers.email}</dd></div>
+                <div><dt>Email</dt><dd>{answers.email}</dd></div>
+                <div><dt>Phone</dt><dd>{answers.phone}</dd></div>
               </dl>
               <p>By sending, you agree that Adversado may contact you about this enquiry.</p>
               <button className="mia-send" type="button" onClick={sendEnquiry} disabled={status === "sending"}>

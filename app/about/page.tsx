@@ -20,7 +20,7 @@ export default function AboutPage() {
     <main className="subpage">
       <SiteHeader />
       <section className="page-hero about-hero" aria-label="Human brains. Restless curiosity.">
-        <ParticleHeadline lines={["HUMAN BRAINS.", "RESTLESS CURIOSITY."]} />
+        <ParticleHeadline lines={["HUMAN BRAINS.", "RESTLESS CURIOSITY."]} mobileLines={["HUMAN", "BRAINS.", "RESTLESS", "CURIOSITY."]} />
         <p className="label">Meet Adversado</p>
         <p className="page-lede">We are an end-to-end creative agency for brands at turning points. We think before we decorate, ask the awkward question, and stay until the idea is real everywhere.</p>
         <div className="page-index">About / 01</div>

@@ -4,6 +4,7 @@ type Lead = {
   name?: string;
   brand?: string;
   email?: string;
+  phone?: string;
   need?: string;
   message?: string;
   source?: string;
@@ -34,11 +35,14 @@ export async function POST(request: Request) {
   const name = clean(body.name, 120);
   const brand = clean(body.brand, 160);
   const email = clean(body.email, 180);
+  const phone = clean(body.phone, 40);
   const need = clean(body.need, 180);
   const message = clean(body.message, 1200);
   const source = clean(body.source, 100);
 
-  if (!name || !brand || !email || !need || !message || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+  const phoneDigits = phone.replace(/\D/g, "");
+  const validPhone = /^[+()\d\s.-]{7,24}$/.test(phone) && phoneDigits.length >= 7 && phoneDigits.length <= 15;
+  if (!name || !brand || !email || !phone || !need || !message || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || !validPhone) {
     return NextResponse.json({ error: "Please complete all fields." }, { status: 400 });
   }
 
@@ -59,6 +63,7 @@ export async function POST(request: Request) {
         `Name: ${name}`,
         `Brand: ${brand}`,
         `Email: ${email}`,
+        `Phone: ${phone}`,
         `Need: ${need}`,
         `Source: ${source}`,
         "",

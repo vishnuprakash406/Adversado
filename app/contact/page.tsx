@@ -15,7 +15,7 @@ export default function ContactPage() {
     <main className="subpage">
       <SiteHeader />
       <section className="contact-page-hero" aria-label="Tell us where it hurts.">
-        <ParticleHeadline lines={["TELL US WHERE", "IT HURTS."]} />
+        <ParticleHeadline lines={["TELL US WHERE", "IT HURTS."]} mobileLines={["TELL US", "WHERE IT", "HURTS."]} />
         <div>
           <p className="label">Your move</p>
           <p>Launching, relaunching, repositioning or expanding? Give Mia the useful details, or reach us directly.</p>

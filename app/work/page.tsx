@@ -12,7 +12,8 @@ const projects = [
   ["01", "A category launch", "Brand foundation · Identity · Campaign", "From an unfamiliar name to a distinctive market entrance.", "project-gold"],
   ["02", "A retail brand, rebuilt", "Strategy · Experience · Digital", "One connected system across store, screen and conversation.", "project-blue"],
   ["03", "A campaign with legs", "Creative platform · Social · Performance", "A single idea designed to travel further than the media plan.", "project-paper"],
-  ["04", "An experience people entered", "Event · Spatial · Interactive", "Turning brand positioning into a place people could feel.", "project-night"]
+  ["04", "An experience people entered", "Event · Spatial · Interactive", "Turning brand positioning into a place people could feel.", "project-night"],
+  ["05", "Immersive worlds built", "AR · VR · Motion Graphics", "Spatial storytelling that blurs the line between brand and environment.", "project-arvr"]
 ];
 
 export default function WorkPage() {
@@ -20,7 +21,7 @@ export default function WorkPage() {
     <main className="subpage">
       <SiteHeader />
       <section className="page-hero work-page-hero" aria-label="Ideas that moved beyond the deck.">
-        <ParticleHeadline lines={["IDEAS THAT MOVED", "BEYOND THE DECK."]} />
+        <ParticleHeadline lines={["IDEAS THAT MOVED", "BEYOND THE DECK."]} mobileLines={["IDEAS THAT", "MOVED", "BEYOND THE", "DECK."]} />
         <p className="label">Selected work</p>
         <p className="page-lede">A selection of transformation stories. The names stay quiet where the work is confidential; the thinking still speaks.</p>
         <div className="page-index">Work / 03</div>

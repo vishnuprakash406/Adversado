@@ -10,21 +10,24 @@ const verticals = [
 ];
 
 const process = [
-  ["Discover", "Learn the business before touching the brand."],
-  ["Debate", "Challenge assumptions until the sharpest truth survives."],
-  ["Define", "Choose one position that makes every next decision easier."],
-  ["Design", "Build identity, communication and experience as one system."],
-  ["Deliver", "Ship with consistency across every channel."],
-  ["Develop", "Measure, refine and keep the brand alive."]
+  ["Discover", "Learn the business before touching the brand.", "/process-steps/discover.jpg"],
+  ["Debate", "Challenge assumptions until the sharpest truth survives.", "/process-steps/debate.jpg"],
+  ["Define", "Choose one position that makes every next decision easier.", "/process-steps/define.jpg"],
+  ["Design", "Build identity, communication and experience as one system.", "/process-steps/design.jpg"],
+  ["Deliver", "Ship with consistency across every channel.", "/process-steps/deliver.jpg"],
+  ["Develop", "Measure, refine and keep the brand alive.", "/process-steps/develop.jpg"]
 ];
 
 export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [soundOn, setSoundOn] = useState(false);
+  const [activeProcess, setActiveProcess] = useState(0);
   const heroRef = useRef<HTMLElement>(null);
-  const heroCanvasRef = useRef<HTMLCanvasElement>(null);
+  const heroVideoRef = useRef<HTMLVideoElement>(null);
   const particleCanvasRef = useRef<HTMLCanvasElement>(null);
   const portalRef = useRef<HTMLElement>(null);
+  const processRef = useRef<HTMLElement>(null);
+  const servicesRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     const onMove = (event: PointerEvent) => {
@@ -46,73 +49,62 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
+    const section = processRef.current;
+    if (!section) return;
+    const steps = Array.from(section.querySelectorAll<HTMLElement>(".process-step"));
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => Math.abs(a.boundingClientRect.top - window.innerHeight / 2) - Math.abs(b.boundingClientRect.top - window.innerHeight / 2));
+        if (visible[0]) setActiveProcess(Number((visible[0].target as HTMLElement).dataset.step));
+      },
+      { rootMargin: "-38% 0px -38% 0px", threshold: 0.01 }
+    );
+    steps.forEach((step) => observer.observe(step));
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
     const hero = heroRef.current;
-    const canvas = heroCanvasRef.current;
-    if (!hero || !canvas) return;
+    const video = heroVideoRef.current;
+    if (!hero || !video) return;
 
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const context = canvas.getContext("2d");
-    const frameCount = 100;
-    const images: HTMLImageElement[] = [];
-    let targetFrame = 0;
-    let currentFrame = 0;
-    let lastDrawnFrame = -1;
-    let frame = 0;
-
-    const resizeCanvas = () => {
-      const ratio = Math.min(window.devicePixelRatio || 1, 2);
-      canvas.width = Math.round(canvas.clientWidth * ratio);
-      canvas.height = Math.round(canvas.clientHeight * ratio);
-      lastDrawnFrame = -1;
-    };
-
-    const drawFrame = (index: number) => {
-      const image = images[index];
-      if (!context || !image?.complete || !image.naturalWidth || index === lastDrawnFrame) return;
-      const scale = Math.max(canvas.width / image.naturalWidth, canvas.height / image.naturalHeight);
-      const width = image.naturalWidth * scale;
-      const height = image.naturalHeight * scale;
-      context.clearRect(0, 0, canvas.width, canvas.height);
-      context.drawImage(image, (canvas.width - width) / 2, (canvas.height - height) / 2, width, height);
-      lastDrawnFrame = index;
-    };
+    let targetTime = 0;
+    let currentTime = 0;
+    let animationFrame = 0;
 
     const updateTarget = () => {
       if (reducedMotion.matches) return;
       const travel = Math.max(hero.offsetHeight - window.innerHeight, 1);
       const progress = Math.min(Math.max(-hero.getBoundingClientRect().top / travel, 0), 1);
-      targetFrame = progress * (frameCount - 1);
+      const usableDuration = Math.min(5, Math.max((video.duration || 5) - 0.03, 0));
+      targetTime = progress * usableDuration;
       hero.style.setProperty("--scroll-progress", progress.toFixed(4));
     };
 
     const render = () => {
-      currentFrame += (targetFrame - currentFrame) * 0.16;
-      drawFrame(Math.min(Math.round(currentFrame), frameCount - 1));
-      frame = requestAnimationFrame(render);
+      currentTime += (targetTime - currentTime) * 0.14;
+      const frameTime = Math.round(currentTime * 30) / 30;
+      if (video.readyState >= 1 && !video.seeking && Math.abs(video.currentTime - frameTime) >= 1 / 30) {
+        video.currentTime = frameTime;
+      }
+      animationFrame = requestAnimationFrame(render);
     };
 
-    resizeCanvas();
-    for (let index = 0; index < frameCount; index += 1) {
-      const image = new Image();
-      image.decoding = "async";
-      image.src = `/hero-frames/frame-${String(index + 1).padStart(3, "0")}.webp`;
-      image.onload = () => {
-        if (index === 0 || Math.round(currentFrame) === index) drawFrame(index);
-      };
-      images.push(image);
-    }
-
+    video.pause();
     window.addEventListener("scroll", updateTarget, { passive: true });
-    window.addEventListener("resize", resizeCanvas);
     window.addEventListener("resize", updateTarget);
+    video.addEventListener("loadedmetadata", updateTarget);
     updateTarget();
-    frame = requestAnimationFrame(render);
+    animationFrame = requestAnimationFrame(render);
 
     return () => {
-      cancelAnimationFrame(frame);
+      cancelAnimationFrame(animationFrame);
       window.removeEventListener("scroll", updateTarget);
-      window.removeEventListener("resize", resizeCanvas);
       window.removeEventListener("resize", updateTarget);
+      video.removeEventListener("loadedmetadata", updateTarget);
     };
   }, []);
 
@@ -152,22 +144,24 @@ export default function Home() {
       const offscreenContext = offscreen.getContext("2d");
       if (!offscreenContext) return;
 
-      const lines = ["BUILD A BRAND", "PEOPLE REMEMBER."];
-      const maxTextWidth = width * 0.88;
-      let fontSize = Math.floor(Math.min(width / 5, height / 4.5));
-      offscreenContext.font = `800 ${fontSize}px "Syne", sans-serif`;
-      while (Math.max(...lines.map((line) => offscreenContext.measureText(line).width)) > maxTextWidth && fontSize > 16) {
+      const lines = width <= 760 ? ["BUILD A", "BRAND PEOPLE", "REMEMBER."] : ["BUILD A BRAND", "PEOPLE REMEMBER."];
+      const maxTextWidth = width * (width <= 760 ? 0.9 : 0.88);
+      let fontSize = Math.floor(width <= 760 ? Math.min(width / 2.7, height / 7) : Math.min(width / 5, height / 4.5));
+      offscreenContext.font = `800 ${fontSize}px "Baloo 2", "Arial Rounded MT Bold", sans-serif`;
+      while (Math.max(...lines.map((line) => offscreenContext.measureText(line).width)) > maxTextWidth && fontSize > 20) {
         fontSize -= 2;
-        offscreenContext.font = `800 ${fontSize}px "Syne", sans-serif`;
+        offscreenContext.font = `800 ${fontSize}px "Baloo 2", "Arial Rounded MT Bold", sans-serif`;
       }
 
       offscreenContext.fillStyle = "#fff";
       offscreenContext.textAlign = "center";
       offscreenContext.textBaseline = "middle";
-      const lineHeight = fontSize * 0.92;
+      const lineHeight = fontSize * 0.8;
       const centerY = height * 0.43;
-      offscreenContext.fillText(lines[0], width / 2, centerY - lineHeight / 2);
-      offscreenContext.fillText(lines[1], width / 2, centerY + lineHeight / 2);
+      const firstLineY = centerY - ((lines.length - 1) * lineHeight) / 2;
+      lines.forEach((line, index) => {
+        offscreenContext.fillText(line, width / 2, firstLineY + index * lineHeight);
+      });
 
       const pixels = offscreenContext.getImageData(0, 0, offscreen.width, offscreen.height).data;
       const area = width * height;
@@ -325,6 +319,32 @@ export default function Home() {
     portal.style.setProperty("--portal-shift-y", "0px");
   };
 
+  const moveLiquid = (event: React.PointerEvent<HTMLElement>) => {
+    const services = servicesRef.current;
+    if (!services) return;
+    const bounds = services.getBoundingClientRect();
+    services.style.setProperty("--liquid-x", `${event.clientX - bounds.left}px`);
+    services.style.setProperty("--liquid-y", `${event.clientY - bounds.top}px`);
+  };
+
+  const resetLiquid = () => {
+    const services = servicesRef.current;
+    if (!services) return;
+    services.style.setProperty("--liquid-x", "72%");
+    services.style.setProperty("--liquid-y", "28%");
+  };
+
+  const moveLiquidButton = (event: React.PointerEvent<HTMLElement>) => {
+    const bounds = event.currentTarget.getBoundingClientRect();
+    event.currentTarget.style.setProperty("--button-x", `${event.clientX - bounds.left}px`);
+    event.currentTarget.style.setProperty("--button-y", `${event.clientY - bounds.top}px`);
+  };
+
+  const resetLiquidButton = (event: React.PointerEvent<HTMLElement>) => {
+    event.currentTarget.style.setProperty("--button-x", "50%");
+    event.currentTarget.style.setProperty("--button-y", "50%");
+  };
+
   return (
     <main>
       <div className="cursor-glow" aria-hidden="true" />
@@ -351,14 +371,26 @@ export default function Home() {
 
       <section className="hero" id="top" ref={heroRef} aria-label="Build a brand people remember.">
         <div className="hero-stage">
-          <canvas ref={heroCanvasRef} className="hero-sequence" aria-hidden="true" />
+          <video
+            ref={heroVideoRef}
+            className="hero-video"
+            src="/subject-a-premium-anthropomor-scrub.mp4"
+            muted
+            playsInline
+            preload="auto"
+            aria-hidden="true"
+            onLoadedMetadata={(event) => {
+              event.currentTarget.pause();
+              event.currentTarget.currentTime = 0;
+            }}
+          />
           <div className="hero-wash" />
           <canvas ref={particleCanvasRef} className="hero-particles" aria-hidden="true" />
           <p className="hero-kicker">Independent creative agency · India</p>
           <div className="hero-copy">
             <p>Strategy to execution. One team, end to end. We transform brands through identity, ideas, digital, performance and experiences.</p>
             <div className="hero-actions">
-              <a className="button gold" href="#contact" onClick={playBell}>Start a transformation <b>↗</b></a>
+              <a className="button gold liquid-button" href="#contact" onClick={playBell} onPointerMove={moveLiquidButton} onPointerLeave={resetLiquidButton}><span>Start a transformation</span><b>↗</b></a>
               <a className="text-link" href="#services">See how we think <span>↓</span></a>
             </div>
           </div>
@@ -377,7 +409,31 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="services" id="services">
+      <section className="services" id="services" ref={servicesRef} onPointerMove={moveLiquid} onPointerLeave={resetLiquid}>
+        <svg className="metaball-defs" aria-hidden="true">
+          <defs>
+            <filter id="metaball-goo" x="-30%" y="-30%" width="160%" height="160%" colorInterpolationFilters="sRGB">
+              <feGaussianBlur in="SourceGraphic" stdDeviation="18" result="blur" />
+              <feColorMatrix
+                in="blur"
+                mode="matrix"
+                values="1 0 0 0 0
+                        0 1 0 0 0
+                        0 0 1 0 0
+                        0 0 0 28 -12"
+                result="goo"
+              />
+              <feBlend in="SourceGraphic" in2="goo" mode="normal" />
+            </filter>
+          </defs>
+        </svg>
+        <div className="metaballs" aria-hidden="true">
+          <i className="metaball cursor-ball" />
+          <i className="metaball ball-one" />
+          <i className="metaball ball-two" />
+          <i className="metaball ball-three" />
+          <i className="metaball ball-four" />
+        </div>
         <div className="section-head">
           <p className="label">Brand transformation</p>
           <h2>Four moves.<br />One connected brand.</h2>
@@ -406,18 +462,23 @@ export default function Home() {
         <span>Branding / Creative / Social / Digital / Performance / Events</span>
       </section>
 
-      <section className="process" id="process">
-        <div className="section-head">
+      <section className="process process-story" id="process" ref={processRef}>
+        <div className="process-intro">
           <p className="label">How we work</p>
           <h2>Six Ds.<br />No filler.</h2>
           <p>Every engagement begins with an audit. Then the useful work starts.</p>
+          <div className="process-progress" aria-label={`Step ${activeProcess + 1} of ${process.length}`}>
+            <strong>D0{activeProcess + 1}</strong>
+            <span><i style={{ transform: `scaleX(${(activeProcess + 1) / process.length})` }} /></span>
+            <small>{activeProcess + 1} / {process.length}</small>
+          </div>
         </div>
         <div className="process-track">
-          {process.map(([title, copy], index) => (
-            <article key={title}>
-              <span>D{index + 1}</span>
-              <h3>{title}</h3>
-              <p>{copy}</p>
+          {process.map(([title, copy, image], index) => (
+            <article className="process-step" data-step={index} data-active={activeProcess === index} key={title} style={{ backgroundImage: `url(${image})` }}>
+              <span>Chapter 0{index + 1}</span>
+              <b aria-hidden="true">D{index + 1}</b>
+              <div><h3>{title}</h3><p>{copy}</p></div>
             </article>
           ))}
         </div>
@@ -429,7 +490,7 @@ export default function Home() {
           <h2>Something changing?</h2>
           <p>Launching. Repositioning. Expanding. If your brand is at a turning point, we should talk.</p>
         </div>
-        <a className="contact-button" href="https://wa.me/918921558984?text=Hi%20Adversado%2C%20I%20want%20to%20talk%20about%20my%20brand." target="_blank" rel="noreferrer" onClick={playBell}>
+        <a className="contact-button liquid-button" href="https://wa.me/918921558984?text=Hi%20Adversado%2C%20I%20want%20to%20talk%20about%20my%20brand." target="_blank" rel="noreferrer" onClick={playBell} onPointerMove={moveLiquidButton} onPointerLeave={resetLiquidButton}>
           <span>Ring the bell</span><b>Let&apos;s make it memorable ↗</b>
         </a>
       </section>

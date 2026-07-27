@@ -23,6 +23,7 @@ export default function ContactForm() {
       name: String(form.get("name") || ""),
       brand: String(form.get("company") || ""),
       email: String(form.get("email") || ""),
+      phone: String(form.get("phone") || ""),
       need: String(form.get("turning-point") || ""),
       message: String(form.get("message") || ""),
       source: "Contact page audit form",
@@ -46,7 +47,7 @@ export default function ContactForm() {
   };
 
   return (
-    <section className="audit-area">
+    <section className="audit-area" id="audit">
       <div className="audit-intro">
         <p className="label">Get in touch</p>
         <h2>Start your<br />free audit.</h2>
@@ -75,6 +76,7 @@ export default function ContactForm() {
             <label><span>Your name</span><input name="name" type="text" placeholder="How should we address you?" required /></label>
             <label><span>Company</span><input name="company" type="text" placeholder="Your brand or company" required /></label>
             <label><span>Email</span><input name="email" type="email" placeholder="you@company.com" required /></label>
+            <label><span>Phone</span><input name="phone" type="tel" inputMode="tel" placeholder="+91 98765 43210" pattern="[0-9+(). -]{7,24}" required /></label>
             <label>
               <span>Turning point</span>
               <select name="turning-point" value={turningPoint} onChange={(event) => setTurningPoint(event.target.value)} required>
