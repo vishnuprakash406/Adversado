@@ -78,8 +78,11 @@ export default function Home() {
 
     const updateTarget = () => {
       if (reducedMotion.matches) return;
+      const rect = hero.getBoundingClientRect();
+      const scrollY = window.pageYOffset || document.documentElement.scrollTop;
+      const heroTop = scrollY + rect.top;
       const travel = Math.max(hero.offsetHeight - window.innerHeight, 1);
-      const progress = Math.min(Math.max(-hero.getBoundingClientRect().top / travel, 0), 1);
+      const progress = Math.min(Math.max((scrollY - heroTop) / travel, 0), 1);
       const usableDuration = Math.min(5, Math.max((video.duration || 5) - 0.03, 0));
       targetTime = progress * usableDuration;
       hero.style.setProperty("--scroll-progress", progress.toFixed(4));
@@ -88,7 +91,7 @@ export default function Home() {
     const render = () => {
       currentTime += (targetTime - currentTime) * 0.14;
       const frameTime = Math.round(currentTime * 24) / 24;
-      if (videoPrimed && video.readyState >= 2 && !video.seeking && Math.abs(video.currentTime - frameTime) >= 1 / 24) {
+      if (videoPrimed && video.readyState >= 1 && !video.seeking && Math.abs(video.currentTime - frameTime) >= 1 / 24) {
         video.currentTime = frameTime;
       }
       animationFrame = requestAnimationFrame(render);
@@ -97,21 +100,24 @@ export default function Home() {
     const primeVideo = async () => {
       if (videoPrimed) return;
       video.muted = true;
+      video.playsInline = true;
       try {
         await video.play();
       } catch {
-        // The poster remains visible until Safari permits media decoding.
+        // Fallback: try setting currentTime directly without play
+        try { video.currentTime = 0.001; } catch {}
       }
       video.pause();
-      video.currentTime = 0.001;
       videoPrimed = true;
       updateTarget();
     };
 
     window.addEventListener("scroll", updateTarget, { passive: true });
     window.addEventListener("resize", updateTarget);
+    window.addEventListener("orientationchange", updateTarget);
     video.addEventListener("loadedmetadata", updateTarget);
     video.addEventListener("loadeddata", primeVideo, { once: true });
+    video.addEventListener("canplay", primeVideo, { once: true });
     updateTarget();
     animationFrame = requestAnimationFrame(render);
     video.load();
@@ -120,8 +126,10 @@ export default function Home() {
       cancelAnimationFrame(animationFrame);
       window.removeEventListener("scroll", updateTarget);
       window.removeEventListener("resize", updateTarget);
+      window.removeEventListener("orientationchange", updateTarget);
       video.removeEventListener("loadedmetadata", updateTarget);
       video.removeEventListener("loadeddata", primeVideo);
+      video.removeEventListener("canplay", primeVideo);
     };
   }, []);
 
