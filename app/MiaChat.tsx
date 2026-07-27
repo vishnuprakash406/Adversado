@@ -86,14 +86,18 @@ export default function MiaChat() {
   return (
     <aside className={open ? "mia open" : "mia"} aria-label="Chat with Mia">
       <button className="mia-launcher" type="button" onClick={() => setOpen(!open)} aria-expanded={open} aria-controls="mia-panel" aria-label={open ? "Close Mia assistant" : "Open Mia assistant"}>
-        <span className="mia-cat" aria-hidden="true">🐈‍⬛</span>
+        <span className="mia-cat" aria-hidden="true">
+          <video src="/adversado-cat.mp4" autoPlay loop muted playsInline preload="metadata" />
+        </span>
         <span><b>Meet Mia</b><small>Ask about your brand</small></span>
         <i aria-hidden="true">{open ? "×" : "↗"}</i>
       </button>
 
       <section className="mia-panel" id="mia-panel" aria-hidden={!open}>
         <header>
-          <div className="mia-avatar" aria-hidden="true">🐈‍⬛</div>
+          <div className="mia-avatar" aria-hidden="true">
+            <video src="/adversado-cat.mp4" autoPlay loop muted playsInline preload="metadata" />
+          </div>
           <div><strong>Mia</strong><span><i /> Adversado&apos;s curious cat</span></div>
           <button type="button" onClick={() => setOpen(false)} aria-label="Close Mia chat">×</button>
         </header>

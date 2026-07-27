@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import ParticleHeadline from "../ParticleHeadline";
 import SiteFooter from "../SiteFooter";
 import SiteHeader from "../SiteHeader";
 
@@ -18,9 +19,9 @@ export default function AboutPage() {
   return (
     <main className="subpage">
       <SiteHeader />
-      <section className="page-hero about-hero">
+      <section className="page-hero about-hero" aria-label="Human brains. Restless curiosity.">
+        <ParticleHeadline lines={["HUMAN BRAINS.", "RESTLESS CURIOSITY."]} />
         <p className="label">Meet Adversado</p>
-        <h1>Human brains.<br /><em>Restless curiosity.</em></h1>
         <p className="page-lede">We are an end-to-end creative agency for brands at turning points. We think before we decorate, ask the awkward question, and stay until the idea is real everywhere.</p>
         <div className="page-index">About / 01</div>
       </section>

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import ParticleHeadline from "../ParticleHeadline";
 import SiteFooter from "../SiteFooter";
 import SiteHeader from "../SiteHeader";
 
@@ -18,9 +19,9 @@ export default function WorkPage() {
   return (
     <main className="subpage">
       <SiteHeader />
-      <section className="page-hero work-page-hero">
+      <section className="page-hero work-page-hero" aria-label="Ideas that moved beyond the deck.">
+        <ParticleHeadline lines={["IDEAS THAT MOVED", "BEYOND THE DECK."]} />
         <p className="label">Selected work</p>
-        <h1>Ideas that moved<br /><em>beyond the deck.</em></h1>
         <p className="page-lede">A selection of transformation stories. The names stay quiet where the work is confidential; the thinking still speaks.</p>
         <div className="page-index">Work / 03</div>
       </section>

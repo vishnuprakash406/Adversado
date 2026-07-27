@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import ContactForm from "../ContactForm";
 import ContactHeroActions from "../ContactHeroActions";
+import ParticleHeadline from "../ParticleHeadline";
 import SiteFooter from "../SiteFooter";
 import SiteHeader from "../SiteHeader";
 
@@ -13,10 +14,10 @@ export default function ContactPage() {
   return (
     <main className="subpage">
       <SiteHeader />
-      <section className="contact-page-hero">
+      <section className="contact-page-hero" aria-label="Tell us where it hurts.">
+        <ParticleHeadline lines={["TELL US WHERE", "IT HURTS."]} />
         <div>
           <p className="label">Your move</p>
-          <h1>Tell us where<br /><em>it hurts.</em></h1>
           <p>Launching, relaunching, repositioning or expanding? Give Mia the useful details, or reach us directly.</p>
         </div>
         <ContactHeroActions />

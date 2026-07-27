@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import ParticleHeadline from "../ParticleHeadline";
 import SiteFooter from "../SiteFooter";
 import SiteHeader from "../SiteHeader";
 
@@ -18,9 +19,9 @@ export default function ServicesPage() {
   return (
     <main className="subpage">
       <SiteHeader />
-      <section className="page-hero services-page-hero">
+      <section className="page-hero services-page-hero" aria-label="From first truth to every touchpoint.">
+        <ParticleHeadline lines={["FROM FIRST TRUTH", "TO EVERY TOUCHPOINT."]} />
         <p className="label">Brand transformation</p>
-        <h1>From first truth<br /><em>to every touchpoint.</em></h1>
         <p className="page-lede">Four verticals, connected by one strategy. Enter anywhere; leave with a brand that makes sense everywhere.</p>
         <div className="page-index">Services / 02</div>
       </section>
