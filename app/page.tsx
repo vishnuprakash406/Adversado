@@ -74,6 +74,7 @@ export default function Home() {
     let targetTime = 0;
     let currentTime = 0;
     let animationFrame = 0;
+    let videoPrimed = false;
 
     const updateTarget = () => {
       if (reducedMotion.matches) return;
@@ -86,25 +87,41 @@ export default function Home() {
 
     const render = () => {
       currentTime += (targetTime - currentTime) * 0.14;
-      const frameTime = Math.round(currentTime * 30) / 30;
-      if (video.readyState >= 1 && !video.seeking && Math.abs(video.currentTime - frameTime) >= 1 / 30) {
+      const frameTime = Math.round(currentTime * 24) / 24;
+      if (videoPrimed && video.readyState >= 2 && !video.seeking && Math.abs(video.currentTime - frameTime) >= 1 / 24) {
         video.currentTime = frameTime;
       }
       animationFrame = requestAnimationFrame(render);
     };
 
-    video.pause();
+    const primeVideo = async () => {
+      if (videoPrimed) return;
+      video.muted = true;
+      try {
+        await video.play();
+      } catch {
+        // The poster remains visible until Safari permits media decoding.
+      }
+      video.pause();
+      video.currentTime = 0.001;
+      videoPrimed = true;
+      updateTarget();
+    };
+
     window.addEventListener("scroll", updateTarget, { passive: true });
     window.addEventListener("resize", updateTarget);
     video.addEventListener("loadedmetadata", updateTarget);
+    video.addEventListener("loadeddata", primeVideo, { once: true });
     updateTarget();
     animationFrame = requestAnimationFrame(render);
+    video.load();
 
     return () => {
       cancelAnimationFrame(animationFrame);
       window.removeEventListener("scroll", updateTarget);
       window.removeEventListener("resize", updateTarget);
       video.removeEventListener("loadedmetadata", updateTarget);
+      video.removeEventListener("loadeddata", primeVideo);
     };
   }, []);
 
@@ -374,15 +391,13 @@ export default function Home() {
           <video
             ref={heroVideoRef}
             className="hero-video"
-            src="/subject-a-premium-anthropomor-scrub.mp4"
+            src="/subject-a-premium-anthropomor-ios.mp4"
+            poster="/subject-a-premium-poster.jpg"
+            autoPlay
             muted
             playsInline
             preload="auto"
             aria-hidden="true"
-            onLoadedMetadata={(event) => {
-              event.currentTarget.pause();
-              event.currentTarget.currentTime = 0;
-            }}
           />
           <div className="hero-wash" />
           <canvas ref={particleCanvasRef} className="hero-particles" aria-hidden="true" />
