@@ -75,6 +75,11 @@ export default function Home() {
     let videoPrimed = false;
     let primingVideo = false;
     let seekPending = false;
+    const navigation = performance.getEntriesByType("navigation")[0] as PerformanceNavigationTiming | undefined;
+    const isReload = navigation?.type === "reload";
+    const previousScrollRestoration = history.scrollRestoration;
+
+    if (isReload) history.scrollRestoration = "manual";
 
     const applyTarget = () => {
       scheduledFrame = 0;
@@ -130,7 +135,18 @@ export default function Home() {
       void primeVideo();
     };
 
-    const onPageShow = () => {
+    const restartHero = () => {
+      window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+      targetTime = 0;
+      hero.style.setProperty("--scroll-progress", "0");
+      try {
+        video.currentTime = 0.001;
+      } catch {}
+      scheduleTarget();
+    };
+
+    const onPageShow = (event: PageTransitionEvent) => {
+      if (isReload && !event.persisted) restartHero();
       updateTarget();
       if (video.readyState >= 2) void primeVideo();
       else video.load();
@@ -150,11 +166,13 @@ export default function Home() {
     video.addEventListener("loadeddata", onMediaReady);
     video.addEventListener("canplay", onMediaReady);
     video.addEventListener("seeked", onSeeked);
-    updateTarget();
+    if (isReload) requestAnimationFrame(restartHero);
+    else updateTarget();
     if (video.readyState >= 2) void primeVideo();
     else video.load();
 
     return () => {
+      history.scrollRestoration = previousScrollRestoration;
       cancelAnimationFrame(scheduledFrame);
       window.removeEventListener("scroll", updateTarget);
       window.removeEventListener("resize", updateTarget);
