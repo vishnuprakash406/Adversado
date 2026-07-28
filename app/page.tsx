@@ -74,6 +74,7 @@ export default function Home() {
     let targetTime = 0;
     let scheduledFrame = 0;
     let videoPrimed = false;
+    let primingVideo = false;
     let seekPending = false;
 
     const applyTarget = () => {
@@ -106,17 +107,21 @@ export default function Home() {
     };
 
     const primeVideo = async () => {
-      if (videoPrimed) return;
+      if (videoPrimed || primingVideo || video.readyState < 2) return;
+      primingVideo = true;
       video.muted = true;
       video.playsInline = true;
       try {
         await video.play();
       } catch {
-        // Fallback: try setting currentTime directly without play
-        try { video.currentTime = 0.001; } catch {}
+        // A restored mobile tab may still require its first user gesture.
       }
       video.pause();
+      try {
+        if (video.currentTime === 0) video.currentTime = 0.001;
+      } catch {}
       videoPrimed = true;
+      primingVideo = false;
       updateTarget();
       scheduleTarget();
     };
@@ -125,24 +130,45 @@ export default function Home() {
       if (seekPending || Math.abs(video.currentTime - targetTime) >= 1 / 24) scheduleTarget();
     };
 
+    const onMediaReady = () => {
+      void primeVideo();
+    };
+
+    const onPageShow = () => {
+      updateTarget();
+      if (video.readyState >= 2) void primeVideo();
+      else video.load();
+    };
+
+    const unlockVideo = () => {
+      if (!videoPrimed) void primeVideo();
+    };
+
     window.addEventListener("scroll", updateTarget, { passive: true });
     window.addEventListener("resize", updateTarget);
     window.addEventListener("orientationchange", updateTarget);
+    window.addEventListener("pageshow", onPageShow);
+    window.addEventListener("touchstart", unlockVideo, { passive: true });
+    window.addEventListener("pointerdown", unlockVideo, { passive: true });
     video.addEventListener("loadedmetadata", updateTarget);
-    video.addEventListener("loadeddata", primeVideo, { once: true });
-    video.addEventListener("canplay", primeVideo, { once: true });
+    video.addEventListener("loadeddata", onMediaReady);
+    video.addEventListener("canplay", onMediaReady);
     video.addEventListener("seeked", onSeeked);
     updateTarget();
-    video.load();
+    if (video.readyState >= 2) void primeVideo();
+    else video.load();
 
     return () => {
       cancelAnimationFrame(scheduledFrame);
       window.removeEventListener("scroll", updateTarget);
       window.removeEventListener("resize", updateTarget);
       window.removeEventListener("orientationchange", updateTarget);
+      window.removeEventListener("pageshow", onPageShow);
+      window.removeEventListener("touchstart", unlockVideo);
+      window.removeEventListener("pointerdown", unlockVideo);
       video.removeEventListener("loadedmetadata", updateTarget);
-      video.removeEventListener("loadeddata", primeVideo);
-      video.removeEventListener("canplay", primeVideo);
+      video.removeEventListener("loadeddata", onMediaReady);
+      video.removeEventListener("canplay", onMediaReady);
       video.removeEventListener("seeked", onSeeked);
     };
   }, []);
@@ -415,7 +441,6 @@ export default function Home() {
             className="hero-video"
             src="/subject-a-premium-anthropomor-ios.mp4"
             poster="/subject-a-premium-poster.jpg"
-            autoPlay
             muted
             playsInline
             preload="auto"
