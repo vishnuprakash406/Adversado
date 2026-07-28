@@ -73,18 +73,15 @@ export default function Home() {
     let targetTime = 0;
     let scheduledFrame = 0;
     let videoPrimed = false;
-    let videoUnlocked = false;
-    let primingVideo = false;
     let seekPending = false;
     const navigation = performance.getEntriesByType("navigation")[0] as PerformanceNavigationTiming | undefined;
     const isReload = navigation?.type === "reload";
-    const previousScrollRestoration = history.scrollRestoration;
 
     if (isReload) history.scrollRestoration = "manual";
 
     const applyTarget = () => {
       scheduledFrame = 0;
-      if (!videoPrimed || video.readyState < 2) return;
+      if (!videoPrimed) return;
       if (video.seeking) {
         seekPending = true;
         return;
@@ -108,23 +105,25 @@ export default function Home() {
       scheduleTarget();
     };
 
-    const primeVideo = async (forceUnlock = false) => {
-      if ((videoPrimed && (!forceUnlock || videoUnlocked)) || primingVideo || video.readyState < 2) return;
-      primingVideo = true;
+    const primeVideo = () => {
+      if (videoPrimed) return;
       video.muted = true;
       video.playsInline = true;
+      video.preload = "auto";
+      video.load();
+      video.currentTime = 0.001;
+      videoPrimed = true;
+      updateTarget();
+      scheduleTarget();
+    };
+
+    const unlockVideo = async () => {
+      if (video.readyState < 2) return;
       try {
         await video.play();
-        videoUnlocked = true;
-      } catch {
-        videoUnlocked = false;
-      }
-      video.pause();
-      try {
-        if (video.currentTime === 0) video.currentTime = 0.001;
+        video.pause();
+        video.currentTime = 0.001;
       } catch {}
-      videoPrimed = true;
-      primingVideo = false;
       updateTarget();
       scheduleTarget();
     };
@@ -133,59 +132,30 @@ export default function Home() {
       if (seekPending || Math.abs(video.currentTime - targetTime) >= 1 / 24) scheduleTarget();
     };
 
-    const onMediaReady = () => {
-      void primeVideo();
-    };
-
-    const restartHero = () => {
-      window.scrollTo({ top: 0, left: 0, behavior: "auto" });
-      targetTime = 0;
-      hero.style.setProperty("--scroll-progress", "0");
-      try {
-        video.currentTime = 0.001;
-      } catch {}
-      scheduleTarget();
-    };
-
-    const onPageShow = (event: PageTransitionEvent) => {
-      if (isReload && !event.persisted) restartHero();
-      updateTarget();
-      if (video.readyState >= 2) void primeVideo();
-      else video.load();
-    };
-
-    const unlockVideo = () => {
-      if (!videoUnlocked) void primeVideo(true);
-    };
-
     window.addEventListener("scroll", updateTarget, { passive: true });
     window.addEventListener("resize", updateTarget);
     window.addEventListener("orientationchange", updateTarget);
-    window.addEventListener("pageshow", onPageShow);
-    window.addEventListener("touchstart", unlockVideo, { passive: true });
-    window.addEventListener("pointerdown", unlockVideo, { passive: true });
     video.addEventListener("loadedmetadata", updateTarget);
-    video.addEventListener("loadeddata", onMediaReady);
-    video.addEventListener("canplay", onMediaReady);
+    video.addEventListener("loadeddata", primeVideo, { once: true });
+    video.addEventListener("canplay", primeVideo, { once: true });
     video.addEventListener("seeked", onSeeked);
-    if (isReload) requestAnimationFrame(restartHero);
-    else updateTarget();
-    if (video.readyState >= 2) void primeVideo();
-    else video.load();
+    document.addEventListener("click", unlockVideo, { once: true });
+    document.addEventListener("touchstart", unlockVideo, { once: true });
+    document.addEventListener("keydown", unlockVideo, { once: true });
+    updateTarget();
 
     return () => {
-      history.scrollRestoration = previousScrollRestoration;
       cancelAnimationFrame(scheduledFrame);
       window.removeEventListener("scroll", updateTarget);
       window.removeEventListener("resize", updateTarget);
       window.removeEventListener("orientationchange", updateTarget);
-      window.removeEventListener("pageshow", onPageShow);
-      window.removeEventListener("touchstart", unlockVideo);
-      window.removeEventListener("pointerdown", unlockVideo);
       video.removeEventListener("loadedmetadata", updateTarget);
-      video.removeEventListener("loadeddata", onMediaReady);
-      video.removeEventListener("canplay", onMediaReady);
+      video.removeEventListener("loadeddata", primeVideo);
+      video.removeEventListener("canplay", primeVideo);
       video.removeEventListener("seeked", onSeeked);
+      document.removeEventListener("click", unlockVideo);
+      document.removeEventListener("touchstart", unlockVideo);
+      document.removeEventListener("keydown", unlockVideo);
     };
   }, []);
 
