@@ -23,7 +23,7 @@ export default function Home() {
   const [soundOn, setSoundOn] = useState(false);
   const [activeProcess, setActiveProcess] = useState(0);
   const heroRef = useRef<HTMLElement>(null);
-  const heroVideoRef = useRef<HTMLVideoElement>(null);
+  const heroFrameRef = useRef<HTMLImageElement>(null);
   const particleCanvasRef = useRef<HTMLCanvasElement>(null);
   const portalRef = useRef<HTMLElement>(null);
   const processRef = useRef<HTMLElement>(null);
@@ -67,95 +67,73 @@ export default function Home() {
 
   useEffect(() => {
     const hero = heroRef.current;
-    const video = heroVideoRef.current;
-    if (!hero || !video) return;
+    const frame = heroFrameRef.current;
+    if (!hero || !frame) return;
 
-    let targetTime = 0;
+    const frameCount = 120;
+    const preloadedFrames: HTMLImageElement[] = [];
+    let currentFrame = 1;
     let scheduledFrame = 0;
-    let videoPrimed = false;
-    let seekPending = false;
+    let preloadTimer = 0;
     const navigation = performance.getEntriesByType("navigation")[0] as PerformanceNavigationTiming | undefined;
     const isReload = navigation?.type === "reload";
+    const previousScrollRestoration = history.scrollRestoration;
 
     if (isReload) history.scrollRestoration = "manual";
 
-    const applyTarget = () => {
+    const frameUrl = (index: number) => `/hero-frames/frame-${String(index).padStart(3, "0")}.webp`;
+
+    const showFrame = (index: number) => {
+      if (index === currentFrame) return;
+      currentFrame = index;
+      frame.src = frameUrl(index);
+    };
+
+    const updateFrame = () => {
       scheduledFrame = 0;
-      if (!videoPrimed) return;
-      if (video.seeking) {
-        seekPending = true;
-        return;
-      }
-      seekPending = false;
-      const frameTime = Math.round(targetTime * 24) / 24;
-      if (Math.abs(video.currentTime - frameTime) >= 1 / 24) video.currentTime = frameTime;
-    };
-
-    const scheduleTarget = () => {
-      if (!scheduledFrame) scheduledFrame = requestAnimationFrame(applyTarget);
-    };
-
-    const updateTarget = () => {
       const rect = hero.getBoundingClientRect();
       const travel = Math.max(hero.offsetHeight - window.innerHeight, 1);
       const progress = Math.min(Math.max(-rect.top / travel, 0), 1);
-      const usableDuration = Math.min(5, Math.max((video.duration || 5) - 0.03, 0));
-      targetTime = progress * usableDuration;
       hero.style.setProperty("--scroll-progress", progress.toFixed(4));
-      scheduleTarget();
+      showFrame(1 + Math.round(progress * (frameCount - 1)));
     };
 
-    const primeVideo = () => {
-      if (videoPrimed) return;
-      video.muted = true;
-      video.playsInline = true;
-      video.preload = "auto";
-      video.load();
-      video.currentTime = 0.001;
-      videoPrimed = true;
-      updateTarget();
-      scheduleTarget();
+    const scheduleFrame = () => {
+      if (!scheduledFrame) scheduledFrame = requestAnimationFrame(updateFrame);
     };
 
-    const unlockVideo = async () => {
-      if (video.readyState < 2) return;
-      try {
-        await video.play();
-        video.pause();
-        video.currentTime = 0.001;
-      } catch {}
-      updateTarget();
-      scheduleTarget();
+    const preloadFrames = (start = 2) => {
+      const end = Math.min(start + 11, frameCount + 1);
+      for (let index = start; index < end; index += 1) {
+        const image = new Image();
+        image.decoding = "async";
+        image.src = frameUrl(index);
+        preloadedFrames.push(image);
+      }
+      if (end <= frameCount) preloadTimer = window.setTimeout(() => preloadFrames(end), 35);
     };
 
-    const onSeeked = () => {
-      if (seekPending || Math.abs(video.currentTime - targetTime) >= 1 / 24) scheduleTarget();
+    const restartHero = () => {
+      window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+      hero.style.setProperty("--scroll-progress", "0");
+      currentFrame = 1;
+      frame.src = frameUrl(1);
     };
 
-    window.addEventListener("scroll", updateTarget, { passive: true });
-    window.addEventListener("resize", updateTarget);
-    window.addEventListener("orientationchange", updateTarget);
-    video.addEventListener("loadedmetadata", updateTarget);
-    video.addEventListener("loadeddata", primeVideo, { once: true });
-    video.addEventListener("canplay", primeVideo, { once: true });
-    video.addEventListener("seeked", onSeeked);
-    document.addEventListener("click", unlockVideo, { once: true });
-    document.addEventListener("touchstart", unlockVideo, { once: true });
-    document.addEventListener("keydown", unlockVideo, { once: true });
-    updateTarget();
+    window.addEventListener("scroll", scheduleFrame, { passive: true });
+    window.addEventListener("resize", scheduleFrame);
+    window.addEventListener("orientationchange", scheduleFrame);
+    if (isReload) requestAnimationFrame(restartHero);
+    else scheduleFrame();
+    preloadTimer = window.setTimeout(() => preloadFrames(), 80);
 
     return () => {
+      history.scrollRestoration = previousScrollRestoration;
       cancelAnimationFrame(scheduledFrame);
-      window.removeEventListener("scroll", updateTarget);
-      window.removeEventListener("resize", updateTarget);
-      window.removeEventListener("orientationchange", updateTarget);
-      video.removeEventListener("loadedmetadata", updateTarget);
-      video.removeEventListener("loadeddata", primeVideo);
-      video.removeEventListener("canplay", primeVideo);
-      video.removeEventListener("seeked", onSeeked);
-      document.removeEventListener("click", unlockVideo);
-      document.removeEventListener("touchstart", unlockVideo);
-      document.removeEventListener("keydown", unlockVideo);
+      window.clearTimeout(preloadTimer);
+      window.removeEventListener("scroll", scheduleFrame);
+      window.removeEventListener("resize", scheduleFrame);
+      window.removeEventListener("orientationchange", scheduleFrame);
     };
   }, []);
 
@@ -422,14 +400,13 @@ export default function Home() {
 
       <section className="hero" id="top" ref={heroRef} aria-label="Build a brand people remember.">
         <div className="hero-stage">
-          <video
-            ref={heroVideoRef}
+          <img
+            ref={heroFrameRef}
             className="hero-video"
-            src="/subject-a-premium-anthropomor-ios.mp4"
-            poster="/subject-a-premium-poster.jpg"
-            muted
-            playsInline
-            preload="auto"
+            src="/hero-frames/frame-001.webp"
+            alt=""
+            decoding="async"
+            fetchPriority="high"
             aria-hidden="true"
           />
           <div className="hero-wash" />
