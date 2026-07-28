@@ -70,7 +70,6 @@ export default function Home() {
     const video = heroVideoRef.current;
     if (!hero || !video) return;
 
-    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
     let targetTime = 0;
     let scheduledFrame = 0;
     let videoPrimed = false;
@@ -94,12 +93,9 @@ export default function Home() {
     };
 
     const updateTarget = () => {
-      if (reducedMotion.matches) return;
       const rect = hero.getBoundingClientRect();
-      const scrollY = window.pageYOffset || document.documentElement.scrollTop;
-      const heroTop = scrollY + rect.top;
       const travel = Math.max(hero.offsetHeight - window.innerHeight, 1);
-      const progress = Math.min(Math.max((scrollY - heroTop) / travel, 0), 1);
+      const progress = Math.min(Math.max(-rect.top / travel, 0), 1);
       const usableDuration = Math.min(5, Math.max((video.duration || 5) - 0.03, 0));
       targetTime = progress * usableDuration;
       hero.style.setProperty("--scroll-progress", progress.toFixed(4));
