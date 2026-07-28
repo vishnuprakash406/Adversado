@@ -73,6 +73,7 @@ export default function Home() {
     let targetTime = 0;
     let scheduledFrame = 0;
     let videoPrimed = false;
+    let videoUnlocked = false;
     let primingVideo = false;
     let seekPending = false;
     const navigation = performance.getEntriesByType("navigation")[0] as PerformanceNavigationTiming | undefined;
@@ -107,15 +108,16 @@ export default function Home() {
       scheduleTarget();
     };
 
-    const primeVideo = async () => {
-      if (videoPrimed || primingVideo || video.readyState < 2) return;
+    const primeVideo = async (forceUnlock = false) => {
+      if ((videoPrimed && (!forceUnlock || videoUnlocked)) || primingVideo || video.readyState < 2) return;
       primingVideo = true;
       video.muted = true;
       video.playsInline = true;
       try {
         await video.play();
+        videoUnlocked = true;
       } catch {
-        // A restored mobile tab may still require its first user gesture.
+        videoUnlocked = false;
       }
       video.pause();
       try {
@@ -153,7 +155,7 @@ export default function Home() {
     };
 
     const unlockVideo = () => {
-      if (!videoPrimed) void primeVideo();
+      if (!videoUnlocked) void primeVideo(true);
     };
 
     window.addEventListener("scroll", updateTarget, { passive: true });
